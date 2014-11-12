@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        
+        <style>
+            #foo
+            {
+                position: fixed;
+                left: 50px;
+                top: 50px;
+            }
+            
+            #bar
+            {
+                position: fixed;
+                left: 350px;
+                top: 50px;
+            }
+            
+            #baz
+            {
+                position: fixed;
+                left: 650px;
+                top: 50px;
+            }
+            
+            #qux
+            {
+                position: fixed;
+                left: 50px;
+                top: 350px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="foo">
+            <a href="#" onclick="foo.show()">Default</a>
+        </div>
+        
+        <div id="bar">
+            <a href="#" onclick="bar.show()">Norwegian (Bokmål)</a>
+        </div>
+        
+        <div id="baz">
+            Non-closeable
+        </div>
+        
+        <div id="qux">
+            <a href="#" onclick="qux.show()">Norwegian (Nynorsk)</a>
+        </div>
+        
+        <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="dist/mapsel.min.js"></script>
+        
+        <script>
+            var foo = new mapsel({
+                container: document.getElementById('foo')
+            });
+            
+            var bar = new mapsel({
+                container: document.getElementById('bar'),
+                language: 'nb',
+                latitude: 78.6,
+                longitude: 18.4,
+                radius: 250000
+            });
+            
+            var baz = new mapsel({
+                container: document.getElementById('baz'),
+                closeable: false,
+                width: 800,
+                height: 600
+            });
+            
+            var qux = new mapsel({
+                container: document.getElementById('qux'),
+                visible: false,
+                precision: 5,
+                language: 'nn',
+                width: 500,
+                height: 300,
+                radius: 4000
+            });
+        </script>
+    </body>
+</html>
