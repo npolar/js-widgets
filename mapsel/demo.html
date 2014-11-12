@@ -35,7 +35,7 @@
     </head>
     <body>
         <div id="foo">
-            <a href="#" onclick="foo.show()">Default</a>
+            <a href="#" onclick="foo.show()">Default (English)</a>
         </div>
         
         <div id="bar">
@@ -43,11 +43,11 @@
         </div>
         
         <div id="baz">
-            Non-closeable
+            Non-closeable (Japanese)
         </div>
         
         <div id="qux">
-            <a href="#" onclick="qux.show()">Norwegian (Nynorsk)</a>
+            <a href="#" onclick="qux.show()">Chinese (Yue)</a>
         </div>
         
         <script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -60,7 +60,7 @@
             
             var bar = new mapsel({
                 container: document.getElementById('bar'),
-                language: 'nb',
+                language: 'nn',
                 latitude: 78.6,
                 longitude: 18.4,
                 radius: 250000
@@ -69,15 +69,15 @@
             var baz = new mapsel({
                 container: document.getElementById('baz'),
                 closeable: false,
+                language: 'ja',
                 width: 800,
                 height: 600
             });
             
             var qux = new mapsel({
                 container: document.getElementById('qux'),
-                visible: false,
                 precision: 5,
-                language: 'nn',
+                language: 'yue',
                 width: 500,
                 height: 300,
                 radius: 4000
