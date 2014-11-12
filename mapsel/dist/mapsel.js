@@ -230,6 +230,12 @@ mapsel.i18n = {
         LONGITUDE:  'Longitude',
         RADIUS:     'Radius'
     },
+    ja: {
+        CLOSE:      '閉じます',
+        LATITUDE:   '緯度',
+        LONGITUDE:  '経度',
+        RADIUS:     '半径'
+    },
     nb: {
         CLOSE:      'Klikk for å lukke',
         LATITUDE:   'Breddegrad',
@@ -241,6 +247,18 @@ mapsel.i18n = {
         LATITUDE:   'Breiddegrad',
         LONGITUDE:  'Lengdegrad',
         RADIUS:     'Radius'
+    },
+    yue: {
+        CLOSE:      '點擊關閉',
+        LATITUDE:   '緯度',
+        LONGITUDE:  '經度',
+        RADIUS:     '半徑'
+    },
+    zh: {
+        CLOSE:      '点击关闭',
+        LATITUDE:   '纬度',
+        LONGITUDE:  '经度',
+        RADIUS:     '半径'
     }
 };
 
