@@ -1,11 +1,11 @@
 /**
- * mapsel.js - Map Coordinates Selector
+ * Mapsel.js - Map Coordinates Selector
  * Widget for selecting latitude and longitude from a map.
  *
  * Norsk Polarinstutt 2014, http://npolar.no/
  */
 
-mapsel.prototype = {
+Mapsel.prototype = {
     hide: function() {
         if(this.element) {
             this.element.style.display = 'none';
