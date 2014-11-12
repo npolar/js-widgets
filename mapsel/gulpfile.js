@@ -36,5 +36,5 @@ gulp.task('default', [
 ]);
 
 gulp.task('watch', function() {
-	gulp.watch('./src/**', ['default']);
+	gulp.watch(sources, ['default']);
 });
