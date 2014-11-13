@@ -15,11 +15,16 @@
                 'font-family: sans-serif',
                 'font-size: 0',
                 'padding: 5px',
-                'position: relative',
                 'text-align: right'
+            ],
+            '.mapsel *' : [
+                'font-weight: normal',
+                'line-height: normal',
+                'margin-bottom: 0'
             ],
             '.mapsel > a': [
                 'color: #aaa',
+                'cursor: pointer',
                 'display: inline-block',
                 'font-size: inherit',
                 'font-weight: bold',

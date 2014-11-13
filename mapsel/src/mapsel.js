@@ -57,7 +57,7 @@ var Mapsel = function(options) {
     
     // Append a close-button if the current container element is closeable
     if(this.closeable) {
-        this.elements.closeButton = append('a', { href: '#', title: Mapsel.i18n[this.language].CLOSE }, 'X');
+        this.elements.closeButton = append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
         this.elements.closeButton.addEventListener('click', function() { self.hide(); });
     }
     
@@ -102,6 +102,7 @@ var Mapsel = function(options) {
     
     // Set element specific styles
     this.element.className = 'mapsel';
+    this.element.style.position = (this.container ? 'relative' : 'absolute');
     this.element.style.background = this.background;
     this.element.style.fontSize = this.font.size;
     this.element.style.height = this.height + 'px';
