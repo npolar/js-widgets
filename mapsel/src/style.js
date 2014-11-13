@@ -10,7 +10,9 @@
         styleElement = document.createElement('style'),
         styles = {
             '.mapsel': [
+                'border: 1px solid #aaa',
                 'border-radius: 5px',
+                'box-shadow: 0 0 2px 0 #aaa',
                 'box-sizing: border-box',
                 'font-family: sans-serif',
                 'font-size: 0',
@@ -18,38 +20,43 @@
                 'text-align: right'
             ],
             '.mapsel *' : [
+                'border: 0',
+                'box-sizing: border-box',
                 'font-weight: normal',
                 'line-height: normal',
-                'margin-bottom: 0'
+                'margin: 0',
+                'padding: 0'
             ],
-            '.mapsel > a': [
+            '.mapsel header a': [
                 'color: #aaa',
                 'cursor: pointer',
                 'display: inline-block',
                 'font-size: inherit',
                 'font-weight: bold',
-                'margin: 0 2px 2px 2px',
+                'margin: 0 2px 5px 0',
                 'text-decoration: none',
                 'text-shadow: 0 0 2px #ccc'
             ],
-            '.mapsel > a:hover': [
+            '.mapsel header a:hover': [
                 'text-shadow: 0 0 1px #333'
             ],
             '.mapsel > div': [
+                'border: 1px solid #aaa',
                 'border-radius: 5px',
                 'display: block',
                 'width: 100%'
             ],
-            '.mapsel > label': [
-                'box-sizing: border-box',
+            '.mapsel fieldset label': [
                 'display: inline-block',
                 'font-size: inherit',
                 'padding-right: 5px',
                 'text-align: right',
                 'width: 40%'
             ],
-            '.mapsel > input': [
-                'box-sizing: border-box',
+            '.mapsel fieldset input': [
+                'border: 1px solid #aaa',
+                'border-radius: 5px',
+                'box-shadow: 0 0 2px 0 #aaa inset',
                 'font-size: inherit',
                 'margin-top: 5px',
                 'padding: 2px 5px',
