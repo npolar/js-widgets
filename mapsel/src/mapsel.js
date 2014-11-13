@@ -99,80 +99,6 @@ var Mapsel = function(options) {
     this.element.style.fontSize = this.font.size;
     this.element.style.opacity = this.opacity;
     
-    // Initialize the map-container
-    this.map.api = new google.maps.Map(this.elements.mapContainer, {
-        center: { lat: this.latitude, lng: this.longitude },
-        disableDoubleClickZoom: true,
-        mapTypeId: google.maps.MapTypeId.TERRAIN,
-        streetViewControl: false,
-        zoom: 1
-    });
-    
-    // Initialize map-marker and related events
-    if(this.radius) {
-        this.map.marker = new google.maps.Circle({
-            center: this.map.api.getCenter(),
-            draggable: true,
-            editable: true,
-            map: this.map.api,
-            radius: this.radius
-        });
-        
-        google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-            self.map.marker.setCenter(e.latLng);
-        });
-        
-        google.maps.event.addListener(this.map.marker, 'center_changed', function() {
-            var latLng = self.map.marker.getCenter();
-            self.elements.latInput.value = self.latitude = Number(latLng.lat().toFixed(self.precision));
-            self.elements.lngInput.value = self.longitude = Number(latLng.lng().toFixed(self.precision));
-        });
-        
-        google.maps.event.addListener(this.map.marker, 'radius_changed', function() {
-            self.elements.radInput.value = self.radius = Math.round(self.map.marker.getRadius());
-        });
-        
-        this.elements.latInput.addEventListener('change', function(e) {
-            self.map.marker.setCenter({ lat: Number(e.target.value), lng: self.longitude });
-            self.map.api.setCenter(self.map.marker.getCenter());
-        });
-        
-        this.elements.lngInput.addEventListener('change', function(e) {
-            self.map.marker.setCenter({ lat: self.latitude, lng: Number(e.target.value) });
-            self.map.api.setCenter(self.map.marker.getCenter());
-        });
-        
-        this.elements.radInput.addEventListener('change', function(e) {
-            self.map.marker.setRadius(self.radius = Number(e.target.value));
-        });
-    } else {
-        this.map.marker = new google.maps.Marker({
-            position: this.map.api.getCenter(),
-            draggable: true,
-            map: this.map.api
-        });
-        
-        google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-            self.map.marker.setPosition(e.latLng);
-        });
-        
-        google.maps.event.addListener(this.map.marker, 'position_changed', function() {
-            var latLng = self.map.marker.getPosition();
-            self.elements.latInput.value = self.latitude = Number(latLng.lat().toFixed(self.precision));
-            self.elements.lngInput.value = self.longitude = Number(latLng.lng().toFixed(self.precision));
-        });
-        
-        this.elements.latInput.addEventListener('change', function(e) {
-            self.map.marker.setPosition({ lat: Number(e.target.value), lng: self.longitude });
-            self.map.api.setCenter(self.map.marker.getPosition());
-        });
-        
-        this.elements.lngInput.addEventListener('change', function(e) {
-            self.map.marker.setPosition({ lat: self.latitude, lng: Number(e.target.value) });
-            self.map.api.setCenter(self.map.marker.getPosition());
-        });   
-    }
-    
     // Append the current container element to the document
     if(this.container) {
         this.container.appendChild(this.element);
@@ -181,6 +107,13 @@ var Mapsel = function(options) {
     // Set element position and size
     this.move(this.x, this.y);
     this.resize(this.width, this.height);
+    
+    // Hide element if not visible by default, otherwise initialize the map
+    if(!this.visible) {
+        this.hide();
+    } else {
+        this.init();
+    }
 };
 
 Mapsel.instances = 0;

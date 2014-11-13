@@ -39,7 +39,7 @@
         </div>
         
         <div id="bar">
-            <a href="#" onclick="bar.show()">Norwegian (Bokmål)</a>
+            <a href="#" onclick="bar.show()">With radius (Norwegian)</a>
         </div>
         
         <div id="baz">
@@ -47,7 +47,7 @@
         </div>
         
         <div id="qux">
-            <a href="#" onclick="qux.show()">Chinese (Yue)</a>
+            <a href="#" onclick="qux.show()">Hidden (Cantonese)</a>
         </div>
         
         <script src="https://maps.googleapis.com/maps/api/js"></script>
@@ -77,6 +77,7 @@
             var qux = new Mapsel({
                 container: document.getElementById('qux'),
                 precision: 5,
+                visible: false,
                 language: 'yue',
                 width: 500,
                 height: 300,

@@ -21,6 +21,7 @@ Mapsel-instances are created using ***new Mapsel(options)***, which accepts the 
  * **opacity** - mapsel container element opacity (defaults to: ***1.0***)
  * **precision** - decimal precision of coordinates (i.e. number of decimals) (defaults to: ***2***)
  * **radius** - initial radius in meters, or **null** to disable (defaults to: ***null***)
+ * **visible** - initially hide the mapsel container if set to **false** (defaults to: **true**)
  * **width** - mapsel container element width in pixels (defaults to: ***200***)
 
 #### Languages:
