@@ -14,6 +14,33 @@ Mapsel.prototype = {
         this.visible = false;
     },
     
+    focus: function(element) {
+        if(this.elements) {
+            switch(element) {
+            case 'lat':
+            case 'latitude':
+                if(this.elements.latInput) {
+                    this.elements.latInput.focus();
+                }
+                break;
+                
+            case 'lng':
+            case 'longitude':
+                if(this.elements.lngInput) {
+                    this.elements.lngInput.focus();
+                }
+                break;
+                
+            case 'rad':
+            case 'radius':
+                if(this.elements.radInput) {
+                    this.elements.radInput.focus();
+                }
+                break;
+            }
+        }
+    },
+    
     init: function() {
         var self = this;
         
