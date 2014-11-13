@@ -10,6 +10,12 @@ var Mapsel = function(options) {
     var self = this;
     
     function clamp(value, min, max) {
+        if(min > max) {
+            var tmp = min;
+            min = max;
+            max = tmp;
+        }
+        
         return Math.min(max, Math.max(min, value));
     }
     
@@ -22,11 +28,11 @@ var Mapsel = function(options) {
     this.height = Math.max(options.height || 250, 250);
     this.instance = Mapsel.instances++;
     this.language = options.language || 'en';
-    this.latitude = clamp(options.latitude || 65.0, -90.0, 90.0);
-    this.longitude = clamp(options.longitude || 0.0, -180.0, 180.0);
+    this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
+    this.longitude = clamp((typeof options.longitude == 'number' ? options.longitude : 0.0), -90.0, 90.0);
     this.map = { api: null, marker: null };
-    this.opacity = clamp(options.opacity || 1.0, 0.0, 1.0);                 // Element opacity (0.0 - 1.0)
-    this.precision = clamp(options.precision || 2, 0, 8);                   // Number of coordinate decimals
+    this.opacity = clamp((typeof options.opacity == 'number' ? options.opacity : 1.0), 0.0, 1.0);
+    this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
     this.visible = (options.visible === false) ? false: true;
     this.width = Math.max(options.width || 200, 200);
@@ -51,7 +57,7 @@ var Mapsel = function(options) {
     
     // Append a close-button if the current container element is closeable
     if(this.closeable) {
-        this.elements.closeButton = append('a', { href: '#', title: Mapsel.i18n[this.language].CLOSE }, 'X');
+        this.elements.closeButton = append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
         this.elements.closeButton.addEventListener('click', function() { self.hide(); });
     }
     
@@ -96,6 +102,7 @@ var Mapsel = function(options) {
     
     // Set element specific styles
     this.element.className = 'mapsel';
+    this.element.style.position = (this.container ? 'relative' : 'absolute');
     this.element.style.background = this.background;
     this.element.style.fontSize = this.font.size;
     this.element.style.height = this.height + 'px';
@@ -279,11 +286,16 @@ Mapsel.i18n = {
                 'font-family: sans-serif',
                 'font-size: 0',
                 'padding: 5px',
-                'position: relative',
                 'text-align: right'
+            ],
+            '.mapsel *' : [
+                'font-weight: normal',
+                'line-height: normal',
+                'margin-bottom: 0'
             ],
             '.mapsel > a': [
                 'color: #aaa',
+                'cursor: pointer',
                 'display: inline-block',
                 'font-size: inherit',
                 'font-weight: bold',
