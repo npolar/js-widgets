@@ -25,7 +25,7 @@ var Mapsel = function(options) {
     this.element = document.createElement('div');
     this.elements = {};
     this.font = { size: '14px' };
-    this.height = Math.max(options.height || 250, 250);
+    this.height = options.height || 250;
     this.instance = Mapsel.instances++;
     this.language = options.language || 'en';
     this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
@@ -35,7 +35,7 @@ var Mapsel = function(options) {
     this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
     this.visible = (options.visible === false) ? false: true;
-    this.width = Math.max(options.width || 200, 200);
+    this.width = options.width || 200;
     this.x = options.x || 0;
     this.y = options.y || 0;
     
@@ -67,37 +67,17 @@ var Mapsel = function(options) {
         stepString += (i == (this.precision - 1) ? 1 : 0);
     }
     
-    // Obtain the pixel width of the longest printable label
-    var labelWidth = 0, widthTestElem = document.createElement('span'), testStrings = [ 'LATITUDE', 'LONGITUDE', 'RADIUS' ];
-    widthTestElem.style.fontSize = this.font.size;
-    widthTestElem.style.visibility = 'hidden';
-    document.body.appendChild(widthTestElem);
-    
-    for(var l in Mapsel.i18n[this.language]) {
-        if(testStrings.indexOf(l) == -1) {
-            continue;
-        }
-        
-        widthTestElem.innerHTML = Mapsel.i18n[this.language][l];
-        labelWidth = Math.max(labelWidth, widthTestElem.offsetWidth);
-    }
-    
-    document.body.removeChild(widthTestElem);
-    var labelWidthPercent = Math.ceil(((labelWidth + 15) / this.width) * 100),
-        labelStyle = 'width: ' + labelWidthPercent + '%',
-        inputStyle = 'width: ' + (100 - labelWidthPercent) + '%';
-    
     // Append mandatory children to the current container element
     this.elements.mapContainer = append('div', { id: 'mapsel_map_' + this.instance });
-    this.elements.latLabel = append('label', { for: 'mapsel_lat_' + this.instance, style: labelStyle }, Mapsel.i18n[this.language].LATITUDE);
-    this.elements.latInput = append('input', { id: 'mapsel_lat_' + this.instance, style: inputStyle, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude });
-    this.elements.lngLabel = append('label', { for: 'mapsel_lng_' + this.instance, style: labelStyle }, Mapsel.i18n[this.language].LONGITUDE);
-    this.elements.lngInput = append('input', { id: 'mapsel_lng_' + this.instance, style: inputStyle, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude });
+    this.elements.latLabel = append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
+    this.elements.latInput = append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude });
+    this.elements.lngLabel = append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
+    this.elements.lngInput = append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude });
     
     // Append a radius input-field if the radius-value is specified
     if(this.radius !== null) {
-        this.elements.radLabel = append('label', { for: 'mapsel_rad_' + this.instance, style: labelStyle }, Mapsel.i18n[this.language].RADIUS);
-        this.elements.radInput = append('input', { id: 'mapsel_rad_' + this.instance, style: inputStyle, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
+        this.elements.radLabel = append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n[this.language].RADIUS);
+        this.elements.radInput = append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
     }
     
     // Set element specific styles
@@ -105,12 +85,11 @@ var Mapsel = function(options) {
     this.element.style.position = (this.container ? 'relative' : 'absolute');
     this.element.style.background = this.background;
     this.element.style.fontSize = this.font.size;
-    this.element.style.height = this.height + 'px';
-    this.element.style.left = this.x + 'px';
     this.element.style.opacity = this.opacity;
-    this.element.style.top = this.y + 'px';
-    this.element.style.width = this.width + 'px';
-    this.elements.mapContainer.style.height = (this.height - ((this.closeable ? 30 : 10) + (30 * (this.radius ? 3 : 2)))) + 'px';
+    
+    // Set element position and size
+    this.move(this.x, this.y);
+    this.resize(this.width, this.height);
     
     // Initialize the map-container
     this.map.api = new google.maps.Map(this.elements.mapContainer, {
