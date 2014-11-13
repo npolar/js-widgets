@@ -45,6 +45,13 @@ Mapsel.prototype = {
             labelWidthString = labelWidthPercent + '%',
             inputWidthString = (100 - labelWidthPercent) + '%';
             
+        // Calculate the map-container height
+        var mapHeight = this.height, baseStyle = window.getComputedStyle(this.element, null);
+        mapHeight -= (parseInt(baseStyle.borderTopWidth) + parseInt(baseStyle.borderBottomWidth));
+        mapHeight -= (parseInt(baseStyle.paddingTop) + parseInt(baseStyle.paddingBottom));
+        mapHeight -= this.elements.titleBar.offsetHeight;
+        mapHeight -= this.elements.fieldset.offsetHeight;
+            
         this.elements.latLabel.style.width = labelWidthString;
         this.elements.latInput.style.width = inputWidthString;
         this.elements.lngLabel.style.width = labelWidthString;
@@ -57,7 +64,7 @@ Mapsel.prototype = {
         
         this.element.style.width = this.width + 'px';
         this.element.style.height = this.height + 'px';
-        this.elements.mapContainer.style.height = (this.height - ((this.closeable ? 30 : 10) + (30 * (this.radius ? 3 : 2)))) + 'px';
+        this.elements.mapContainer.style.height = mapHeight + 'px';
     },
     
     show: function() {

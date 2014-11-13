@@ -39,27 +39,29 @@ var Mapsel = function(options) {
     this.x = options.x || 0;
     this.y = options.y || 0;
     
-    // Function used to append children to the container element
-    function append(tag, attribs, value) {
-        var elem = document.createElement(tag);
+    // Proxy function used to append children to an element
+    function elemAppendFunc(elem, tag, attribs, value) {
+        var newElem = document.createElement(tag);
+        
+        newElem.append = function(tag, attribs, value) {
+            return elemAppendFunc(newElem, tag, attribs, value);
+        };
         
         for(var a in attribs) {
-            elem.setAttribute(a, attribs[a]);
+            newElem.setAttribute(a, attribs[a]);
         }
         
         if(value !== undefined) {
-            elem.innerHTML = value;
+            newElem.innerHTML = value;
         }
         
-        self.element.appendChild(elem);
-        return elem;
+        elem.appendChild(newElem);
+        return newElem;
     }
     
-    // Append a close-button if the current container element is closeable
-    if(this.closeable) {
-        this.elements.closeButton = append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
-        this.elements.closeButton.addEventListener('click', function() { self.hide(); });
-    }
+    this.element.append = function(tag, attribs, value) {
+        return elemAppendFunc(self.element, tag, attribs, value);
+    };
     
     // Determine the input step-value based on precision
     var stepString = this.precision ? '0.' : '1';
@@ -67,17 +69,27 @@ var Mapsel = function(options) {
         stepString += (i == (this.precision - 1) ? 1 : 0);
     }
     
-    // Append mandatory children to the current container element
-    this.elements.mapContainer = append('div', { id: 'mapsel_map_' + this.instance });
-    this.elements.latLabel = append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
-    this.elements.latInput = append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude });
-    this.elements.lngLabel = append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
-    this.elements.lngInput = append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude });
+    // Append sub-element container elements
+    this.elements.titleBar = this.element.append('header');
+    this.elements.mapContainer = this.element.append('div', { id: 'mapsel_map_' + this.instance });
+    this.elements.fieldset = this.element.append('fieldset');
     
-    // Append a radius input-field if the radius-value is specified
+    // Append a close-button to the titleBar element if closeable
+    if(this.closeable) {
+        this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
+        this.elements.closeButton.addEventListener('click', function() { self.hide(); });
+    }
+    
+    // Append mandatory fields to the fieldset element
+    this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
+    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude });
+    this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
+    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude });
+    
+    // Append a radius input-field to the fieldset element if radius-value is specified
     if(this.radius !== null) {
-        this.elements.radLabel = append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n[this.language].RADIUS);
-        this.elements.radInput = append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
+        this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n[this.language].RADIUS);
+        this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
     }
     
     // Set element specific styles
@@ -86,10 +98,6 @@ var Mapsel = function(options) {
     this.element.style.background = this.background;
     this.element.style.fontSize = this.font.size;
     this.element.style.opacity = this.opacity;
-    
-    // Set element position and size
-    this.move(this.x, this.y);
-    this.resize(this.width, this.height);
     
     // Initialize the map-container
     this.map.api = new google.maps.Map(this.elements.mapContainer, {
@@ -169,6 +177,10 @@ var Mapsel = function(options) {
     if(this.container) {
         this.container.appendChild(this.element);
     } else document.body.appendChild(this.element);
+    
+    // Set element position and size
+    this.move(this.x, this.y);
+    this.resize(this.width, this.height);
 };
 
 Mapsel.instances = 0;
