@@ -15,6 +15,8 @@ Mapsel.prototype = {
     },
     
     init: function() {
+        var self = this;
+        
         // Initialize map API
         this.map.api = new google.maps.Map(this.elements.mapContainer, {
             center: { lat: this.latitude, lng: this.longitude },
