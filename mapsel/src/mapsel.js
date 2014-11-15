@@ -24,6 +24,7 @@ var Mapsel = function(options) {
     this.closeable = (options.closeable === false) ? false : true;
     this.element = document.createElement('div');
     this.elements = {};
+    this.events = {};
     this.font = { size: '14px' };
     this.height = options.height || 250;
     this.instance = Mapsel.instances++;

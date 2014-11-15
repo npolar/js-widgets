@@ -24,6 +24,7 @@ var Mapsel = function(options) {
     this.closeable = (options.closeable === false) ? false : true;
     this.element = document.createElement('div');
     this.elements = {};
+    this.events = {};
     this.font = { size: '14px' };
     this.height = options.height || 250;
     this.instance = Mapsel.instances++;
@@ -126,6 +127,14 @@ Mapsel.instances = 0;
  */
 
 Mapsel.prototype = {
+    on: function(event, callback) {
+        if(typeof callback == 'function') {
+            this.events[event] = callback;
+        } else if(this.events[event]) {
+            delete this.events[event];
+        }
+    },
+    
     hide: function() {
         if(this.element) {
             this.element.style.display = 'none';
@@ -188,13 +197,33 @@ Mapsel.prototype = {
             });
             
             google.maps.event.addListener(this.map.marker, 'center_changed', function() {
-                var latLng = self.map.marker.getCenter();
-                self.elements.latInput.value = self.latitude = Number(latLng.lat().toFixed(self.precision));
-                self.elements.lngInput.value = self.longitude = Number(latLng.lng().toFixed(self.precision));
+                var latLng = self.map.marker.getCenter(),
+                    newLat = Number(latLng.lat().toFixed(self.precision)),
+                    newLng = Number(latLng.lng().toFixed(self.precision));
+                
+                if(newLat != self.latitude) {
+                    self.elements.latInput.value = self.latitude = newLat;
+                    
+                    if(typeof self.events.latitude == 'function') {
+                        self.events.latitude(newLat);
+                    }
+                }
+                
+                if(newLng != self.longitude) {
+                    self.elements.lngInput.value = self.longitude = newLng;
+                    
+                    if(typeof self.events.longitude == 'function') {
+                        self.events.longitude(newLng);
+                    }
+                }
             });
             
             google.maps.event.addListener(this.map.marker, 'radius_changed', function() {
                 self.elements.radInput.value = self.radius = Math.round(self.map.marker.getRadius());
+                
+                if(typeof self.events.radius == 'function') {
+                    self.events.radius(self.radius);
+                }
             });
             
             this.elements.latInput.addEventListener('change', function(e) {
@@ -222,9 +251,25 @@ Mapsel.prototype = {
             });
             
             google.maps.event.addListener(this.map.marker, 'position_changed', function() {
-                var latLng = self.map.marker.getPosition();
-                self.elements.latInput.value = self.latitude = Number(latLng.lat().toFixed(self.precision));
-                self.elements.lngInput.value = self.longitude = Number(latLng.lng().toFixed(self.precision));
+                var latLng = self.map.marker.getPosition(),
+                    newLat = Number(latLng.lat().toFixed(self.precision)),
+                    newLng = Number(latLng.lng().toFixed(self.precision));
+                
+                if(newLat != self.latitude) {
+                    self.elements.latInput.value = self.latitude = newLat;
+                    
+                    if(typeof self.events.latitude == 'function') {
+                        self.events.latitude(newLat);
+                    }
+                }
+                
+                if(newLng != self.longitude) {
+                    self.elements.lngInput.value = self.longitude = newLng;
+                    
+                    if(typeof self.events.longitude == 'function') {
+                        self.events.longitude(newLng);
+                    }
+                }
             });
             
             this.elements.latInput.addEventListener('change', function(e) {
