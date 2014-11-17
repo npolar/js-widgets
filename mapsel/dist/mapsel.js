@@ -19,6 +19,7 @@ var Mapsel = function(options) {
         return Math.min(max, Math.max(min, value));
     }
     
+    this.api = options.api || 'google';
     this.background = options.background || '#e3e3e3';
     this.container = options.container || null;
     this.closeable = (options.closeable === false) ? false : true;
@@ -31,7 +32,6 @@ var Mapsel = function(options) {
     this.language = options.language || 'en';
     this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
     this.longitude = clamp((typeof options.longitude == 'number' ? options.longitude : 0.0), -90.0, 90.0);
-    this.map = { api: null, marker: null };
     this.opacity = clamp((typeof options.opacity == 'number' ? options.opacity : 1.0), 0.0, 1.0);
     this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
@@ -113,10 +113,11 @@ var Mapsel = function(options) {
     if(!this.visible) {
         this.hide();
     } else {
-        this.init();
+        this.init(this.api);
     }
 };
 
+Mapsel.api = {};
 Mapsel.instances = 0;
 
 /**
@@ -170,118 +171,18 @@ Mapsel.prototype = {
         }
     },
     
-    init: function() {
+    init: function(api) {
         var self = this;
         
-        // Initialize map API
-        this.map.api = new google.maps.Map(this.elements.mapContainer, {
-            center: { lat: this.latitude, lng: this.longitude },
-            disableDoubleClickZoom: true,
-            mapTypeId: google.maps.MapTypeId.TERRAIN,
-            streetViewControl: false,
-            zoom: 2
-        });
-        
-        // Initialize map marker
-        if(this.radius) {
-            this.map.marker = new google.maps.Circle({
-                center: this.map.api.getCenter(),
-                draggable: true,
-                editable: true,
-                map: this.map.api,
-                radius: this.radius
-            });
-            
-            google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-                self.map.marker.setCenter(e.latLng);
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'center_changed', function() {
-                var latLng = self.map.marker.getCenter(),
-                    newLat = Number(latLng.lat().toFixed(self.precision)),
-                    newLng = Number(latLng.lng().toFixed(self.precision));
-                
-                if(newLat != self.latitude) {
-                    self.elements.latInput.value = self.latitude = newLat;
-                    
-                    if(typeof self.events.latitude == 'function') {
-                        self.events.latitude(newLat);
-                    }
-                }
-                
-                if(newLng != self.longitude) {
-                    self.elements.lngInput.value = self.longitude = newLng;
-                    
-                    if(typeof self.events.longitude == 'function') {
-                        self.events.longitude(newLng);
-                    }
-                }
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'radius_changed', function() {
-                self.elements.radInput.value = self.radius = Math.round(self.map.marker.getRadius());
-                
-                if(typeof self.events.radius == 'function') {
-                    self.events.radius(self.radius);
-                }
-            });
-            
-            this.elements.latInput.addEventListener('change', function(e) {
-                self.map.marker.setCenter({ lat: Number(e.target.value), lng: self.longitude });
-                self.map.api.setCenter(self.map.marker.getCenter());
-            });
-            
-            this.elements.lngInput.addEventListener('change', function(e) {
-                self.map.marker.setCenter({ lat: self.latitude, lng: Number(e.target.value) });
-                self.map.api.setCenter(self.map.marker.getCenter());
-            });
-            
-            this.elements.radInput.addEventListener('change', function(e) {
-                self.map.marker.setRadius(self.radius = Number(e.target.value));
-            });
-        } else {
-            this.map.marker = new google.maps.Marker({
-                position: this.map.api.getCenter(),
-                draggable: true,
-                map: this.map.api
-            });
-            
-            google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-                self.map.marker.setPosition(e.latLng);
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'position_changed', function() {
-                var latLng = self.map.marker.getPosition(),
-                    newLat = Number(latLng.lat().toFixed(self.precision)),
-                    newLng = Number(latLng.lng().toFixed(self.precision));
-                
-                if(newLat != self.latitude) {
-                    self.elements.latInput.value = self.latitude = newLat;
-                    
-                    if(typeof self.events.latitude == 'function') {
-                        self.events.latitude(newLat);
-                    }
-                }
-                
-                if(newLng != self.longitude) {
-                    self.elements.lngInput.value = self.longitude = newLng;
-                    
-                    if(typeof self.events.longitude == 'function') {
-                        self.events.longitude(newLng);
-                    }
-                }
-            });
-            
-            this.elements.latInput.addEventListener('change', function(e) {
-                self.map.marker.setPosition({ lat: Number(e.target.value), lng: self.longitude });
-                self.map.api.setCenter(self.map.marker.getPosition());
-            });
-            
-            this.elements.lngInput.addEventListener('change', function(e) {
-                self.map.marker.setPosition({ lat: self.latitude, lng: Number(e.target.value) });
-                self.map.api.setCenter(self.map.marker.getPosition());
-            });
+        for(var a in Mapsel.api) {
+            if(api.toLowerCase() == a.toLowerCase()) {
+                this.api = new Mapsel.api[a](self);
+                return true;
+            }
         }
+        
+        console.error('Unsupported map API: ' + api);
+        return false;
     },
     
     move: function(x, y, relative) {
@@ -341,10 +242,10 @@ Mapsel.prototype = {
         if(this.element) {
             this.element.style.display = 'block';
             
-            if(this.map.api) {
-                this.map.api.setCenter({ lat: this.latitude, lng: this.longitude });
+            if(typeof this.api == 'object') {
+                this.api.center(this.latitude, this.longitude);
             } else {
-                this.init();
+                this.init(this.api);
             }
         }
         
@@ -478,3 +379,246 @@ Mapsel.i18n = {
     
     head.appendChild(styleElement);
 })();
+
+/**
+ * Mapsel.js - Map Coordinates Selector
+ * Widget for selecting latitude and longitude from a map.
+ *
+ * Norsk Polarinstutt 2014, http://npolar.no/
+ */
+
+(function() { if(window.google && window.google.maps) {
+    
+    Mapsel.api.Google = function(parent) {
+        var self = this;
+        
+        this.map = null;
+        this.marker = null;
+        
+        if(typeof parent == 'object') {
+            // Initialize map
+            self.map = new google.maps.Map(parent.elements.mapContainer, {
+                center: { lat: parent.latitude, lng: parent.longitude },
+                disableDoubleClickZoom: true,
+                mapTypeId: google.maps.MapTypeId.TERRAIN,
+                streetViewControl: false,
+                zoom: 2
+            });
+            
+            // Initialize marker
+            if(parent.radius) {
+                self.marker = new google.maps.Circle({
+                    center: self.map.getCenter(),
+                    draggable: true,
+                    editable: true,
+                    map: self.map,
+                    radius: parent.radius
+                });
+                
+                google.maps.event.addListener(self.map, 'dblclick', function(e) {
+                    self.marker.setCenter(e.latLng);
+                });
+                
+                google.maps.event.addListener(self.marker, 'center_changed', function() {
+                    var latLng = self.marker.getCenter(),
+                        newLat = Number(latLng.lat().toFixed(parent.precision)),
+                        newLng = Number(latLng.lng().toFixed(parent.precision));
+                    
+                    if(newLat != parent.latitude) {
+                        parent.elements.latInput.value = parent.latitude = newLat;
+                        
+                        if(typeof parent.events.latitude == 'function') {
+                            parent.events.latitude(newLat);
+                        }
+                    }
+                    
+                    if(newLng != parent.longitude) {
+                        parent.elements.lngInput.value = parent.longitude = newLng;
+                        
+                        if(typeof parent.events.longitude == 'function') {
+                            parent.events.longitude(newLng);
+                        }
+                    }
+                });
+                
+                google.maps.event.addListener(self.marker, 'radius_changed', function() {
+                    parent.elements.radInput.value = parent.radius = Math.round(self.marker.getRadius());
+                    
+                    if(typeof parent.events.radius == 'function') {
+                        parent.events.radius(parent.radius);
+                    }
+                });
+                
+                parent.elements.latInput.addEventListener('change', function(e) {
+                    self.marker.setCenter({ lat: Number(e.target.value), lng: parent.longitude });
+                    self.map.setCenter(self.marker.getCenter());
+                });
+                
+                parent.elements.lngInput.addEventListener('change', function(e) {
+                    self.marker.setCenter({ lat: parent.latitude, lng: Number(e.target.value) });
+                    self.map.setCenter(self.marker.getCenter());
+                });
+                
+                parent.elements.radInput.addEventListener('change', function(e) {
+                    self.marker.setRadius(parent.radius = Number(e.target.value));
+                });
+            } else {
+                self.marker = new google.maps.Marker({
+                    position: self.map.getCenter(),
+                    draggable: true,
+                    map: self.map
+                });
+                
+                google.maps.event.addListener(self.map, 'dblclick', function(e) {
+                    self.marker.setPosition(e.latLng);
+                });
+                
+                google.maps.event.addListener(self.marker, 'position_changed', function() {
+                    var latLng = self.marker.getPosition(),
+                        newLat = Number(latLng.lat().toFixed(parent.precision)),
+                        newLng = Number(latLng.lng().toFixed(parent.precision));
+                    
+                    if(newLat != parent.latitude) {
+                        parent.elements.latInput.value = parent.latitude = newLat;
+                        
+                        if(typeof parent.events.latitude == 'function') {
+                            parent.events.latitude(newLat);
+                        }
+                    }
+                    
+                    if(newLng != parent.longitude) {
+                        parent.elements.lngInput.value = parent.longitude = newLng;
+                        
+                        if(typeof parent.events.longitude == 'function') {
+                            parent.events.longitude(newLng);
+                        }
+                    }
+                });
+                
+                parent.elements.latInput.addEventListener('change', function(e) {
+                    self.marker.setPosition({ lat: Number(e.target.value), lng: parent.longitude });
+                    self.map.setCenter(self.marker.getPosition());
+                });
+                
+                parent.elements.lngInput.addEventListener('change', function(e) {
+                    self.marker.setPosition({ lat: parent.latitude, lng: Number(e.target.value) });
+                    self.map.setCenter(self.marker.getPosition());
+                });
+            }
+        }
+    };
+    
+    Mapsel.api.Google.prototype = {
+        center: function(latitude, longitude) {
+            if(this.map) {
+                this.map.setCenter({ lat: latitude, lng: longitude });
+            }
+        }
+    };
+    
+}})();
+
+/**
+ * Mapsel.js - Map Coordinates Selector
+ * Widget for selecting latitude and longitude from a map.
+ *
+ * Norsk Polarinstutt 2014, http://npolar.no/
+ */
+
+(function() { if(window.L && window.L.map) {
+    
+    Mapsel.api.Leaflet = function(parent) {
+        var self = this;
+        
+        this.map = null;
+        this.marker = null;
+        
+        if(typeof parent == 'object') {
+            // Initialize map
+            self.map = L.map(parent.elements.mapContainer, {
+                center: { lat: parent.latitude, lng: parent.longitude },
+                doubleClickZoom: false,
+                zoom: 2
+            });
+            
+            L.tileLayer('http://tilestream.data.npolar.no/v2/WorldHax/{z}/{x}/{y}.png').addTo(self.map);
+            
+            // Initialize marker
+            if(parent.radius) {
+                self.marker = L.circle(self.map.getCenter(), parent.radius).addTo(self.map);
+                self.marker.mapselEvent = { move: false, resize: false };
+                
+                self.map.on('dblclick', function(e) {
+                    self.marker.setLatLng(e.latlng);
+                    parent.latitude = e.latlng.lat.toFixed(parent.precision);
+                    parent.longitude = e.latlng.lng.toFixed(parent.precision);
+                });
+                
+                // TODO: Move/Resize events
+                
+                parent.elements.latInput.addEventListener('change', function(e) {
+                    self.marker.setLatLng({ lat: (parent.latitude = Number(e.target.value)), lng: parent.longitude });
+                    self.map.setView(self.marker.getLatLng());
+                });
+                
+                parent.elements.lngInput.addEventListener('change', function(e) {
+                    self.marker.setLatLng({ lat: parent.latitude, lng: (parent.longitude = Number(e.target.value)) });
+                    self.map.setView(self.marker.getLatLng());
+                });
+                
+                parent.elements.radInput.addEventListener('change', function(e) {
+                    self.marker.setRadius(parent.radius = Number(e.target.value));
+                });
+            } else {
+                self.marker = L.marker(self.map.getCenter(), {
+                    draggable: true
+                }).addTo(self.map);
+                
+                self.map.on('dblclick', function(e) {
+                    self.marker.setLatLng(e.latlng);
+                });
+                
+                self.marker.on('move', function(e) {
+                    var latLng = e.latlng,
+                        newLat = Number(latLng.lat.toFixed(parent.precision)),
+                        newLng = Number(latLng.lng.toFixed(parent.precision));
+                        
+                    if(newLat != parent.latitude) {
+                        parent.elements.latInput.value = parent.latitude = newLat;
+                        
+                        if(typeof parent.events.latitude == 'function') {
+                            parent.events.latitude(newLat);
+                        }
+                    }
+                    
+                    if(newLng != parent.longitude) {
+                        parent.elements.lngInput.value = parent.longitude = newLng;
+                        
+                        if(typeof parent.events.longitude == 'function') {
+                            parent.events.longitude(newLng);
+                        }
+                    }
+                });
+                
+                parent.elements.latInput.addEventListener('change', function(e) {
+                    self.marker.setLatLng({ lat: Number(e.target.value), lng: parent.longitude });
+                    self.map.setView(self.marker.getLatLng());
+                });
+                
+                parent.elements.lngInput.addEventListener('change', function(e) {
+                    self.marker.setLatLng({ lat: parent.latitude, lng: Number(e.target.value) });
+                    self.map.setView(self.marker.getLatLng());
+                });
+            }
+        }
+    };
+    
+    Mapsel.api.Leaflet.prototype = {
+        center: function(latitude, longitude) {
+            if(this.map) {
+                this.map.setView({ lat: latitude, lng: longitude });
+            }
+        }
+    };
+    
+}})();
