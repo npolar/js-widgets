@@ -5,7 +5,7 @@
  * Norsk Polarinstutt 2014, http://npolar.no/
  */
 
-(function() { if(google && google.maps) {
+(function() { if(window.google && window.google.maps) {
     
     Mapsel.api.Google = function(parent) {
         var self = this;
@@ -88,7 +88,7 @@
                 });
                 
                 google.maps.event.addListener(self.map, 'dblclick', function(e) {
-                    self.map.marker.setPosition(e.latLng);
+                    self.marker.setPosition(e.latLng);
                 });
                 
                 google.maps.event.addListener(self.marker, 'position_changed', function() {
