@@ -9,7 +9,7 @@ var sources = [
 	'./src/prototype.js',
 	'./src/i18n.js',
 	'./src/style.js',
-	'./src/api/google.js'
+	'./src/api/*.js'
 ];
 
 gulp.task('compile', [], function() {
