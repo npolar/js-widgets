@@ -2,6 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8" />
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
         
         <style>
             #foo
@@ -51,6 +52,7 @@
         </div>
         
         <script src="https://maps.googleapis.com/maps/api/js"></script>
+        <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
         <script src="dist/mapsel.min.js"></script>
         
         <script>
@@ -59,6 +61,7 @@
             });
             
             var bar = new Mapsel({
+                api: 'leaflet',
                 container: document.getElementById('bar'),
                 language: 'nn',
                 latitude: 78.6,
@@ -67,6 +70,7 @@
             });
             
             var baz = new Mapsel({
+                api: 'leaflet',
                 container: document.getElementById('baz'),
                 closeable: false,
                 language: 'ja',
