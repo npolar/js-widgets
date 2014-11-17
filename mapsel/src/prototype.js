@@ -49,118 +49,18 @@ Mapsel.prototype = {
         }
     },
     
-    init: function() {
+    init: function(api) {
         var self = this;
         
-        // Initialize map API
-        this.map.api = new google.maps.Map(this.elements.mapContainer, {
-            center: { lat: this.latitude, lng: this.longitude },
-            disableDoubleClickZoom: true,
-            mapTypeId: google.maps.MapTypeId.TERRAIN,
-            streetViewControl: false,
-            zoom: 2
-        });
-        
-        // Initialize map marker
-        if(this.radius) {
-            this.map.marker = new google.maps.Circle({
-                center: this.map.api.getCenter(),
-                draggable: true,
-                editable: true,
-                map: this.map.api,
-                radius: this.radius
-            });
-            
-            google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-                self.map.marker.setCenter(e.latLng);
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'center_changed', function() {
-                var latLng = self.map.marker.getCenter(),
-                    newLat = Number(latLng.lat().toFixed(self.precision)),
-                    newLng = Number(latLng.lng().toFixed(self.precision));
-                
-                if(newLat != self.latitude) {
-                    self.elements.latInput.value = self.latitude = newLat;
-                    
-                    if(typeof self.events.latitude == 'function') {
-                        self.events.latitude(newLat);
-                    }
-                }
-                
-                if(newLng != self.longitude) {
-                    self.elements.lngInput.value = self.longitude = newLng;
-                    
-                    if(typeof self.events.longitude == 'function') {
-                        self.events.longitude(newLng);
-                    }
-                }
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'radius_changed', function() {
-                self.elements.radInput.value = self.radius = Math.round(self.map.marker.getRadius());
-                
-                if(typeof self.events.radius == 'function') {
-                    self.events.radius(self.radius);
-                }
-            });
-            
-            this.elements.latInput.addEventListener('change', function(e) {
-                self.map.marker.setCenter({ lat: Number(e.target.value), lng: self.longitude });
-                self.map.api.setCenter(self.map.marker.getCenter());
-            });
-            
-            this.elements.lngInput.addEventListener('change', function(e) {
-                self.map.marker.setCenter({ lat: self.latitude, lng: Number(e.target.value) });
-                self.map.api.setCenter(self.map.marker.getCenter());
-            });
-            
-            this.elements.radInput.addEventListener('change', function(e) {
-                self.map.marker.setRadius(self.radius = Number(e.target.value));
-            });
-        } else {
-            this.map.marker = new google.maps.Marker({
-                position: this.map.api.getCenter(),
-                draggable: true,
-                map: this.map.api
-            });
-            
-            google.maps.event.addListener(this.map.api, 'dblclick', function(e) {
-                self.map.marker.setPosition(e.latLng);
-            });
-            
-            google.maps.event.addListener(this.map.marker, 'position_changed', function() {
-                var latLng = self.map.marker.getPosition(),
-                    newLat = Number(latLng.lat().toFixed(self.precision)),
-                    newLng = Number(latLng.lng().toFixed(self.precision));
-                
-                if(newLat != self.latitude) {
-                    self.elements.latInput.value = self.latitude = newLat;
-                    
-                    if(typeof self.events.latitude == 'function') {
-                        self.events.latitude(newLat);
-                    }
-                }
-                
-                if(newLng != self.longitude) {
-                    self.elements.lngInput.value = self.longitude = newLng;
-                    
-                    if(typeof self.events.longitude == 'function') {
-                        self.events.longitude(newLng);
-                    }
-                }
-            });
-            
-            this.elements.latInput.addEventListener('change', function(e) {
-                self.map.marker.setPosition({ lat: Number(e.target.value), lng: self.longitude });
-                self.map.api.setCenter(self.map.marker.getPosition());
-            });
-            
-            this.elements.lngInput.addEventListener('change', function(e) {
-                self.map.marker.setPosition({ lat: self.latitude, lng: Number(e.target.value) });
-                self.map.api.setCenter(self.map.marker.getPosition());
-            });
+        for(var a in Mapsel.api) {
+            if(api.toLowerCase() == a.toLowerCase()) {
+                this.api = new Mapsel.api[a](self);
+                return true;
+            }
         }
+        
+        console.error('Unsupported map API: ' + api);
+        return false;
     },
     
     move: function(x, y, relative) {
@@ -220,10 +120,10 @@ Mapsel.prototype = {
         if(this.element) {
             this.element.style.display = 'block';
             
-            if(this.map.api) {
-                this.map.api.setCenter({ lat: this.latitude, lng: this.longitude });
+            if(typeof this.api == 'object') {
+                this.api.center(this.latitude, this.longitude);
             } else {
-                this.init();
+                this.init(this.api);
             }
         }
         

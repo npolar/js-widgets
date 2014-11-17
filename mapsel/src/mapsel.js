@@ -19,6 +19,7 @@ var Mapsel = function(options) {
         return Math.min(max, Math.max(min, value));
     }
     
+    this.api = options.api || 'google';
     this.background = options.background || '#e3e3e3';
     this.container = options.container || null;
     this.closeable = (options.closeable === false) ? false : true;
@@ -31,7 +32,6 @@ var Mapsel = function(options) {
     this.language = options.language || 'en';
     this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
     this.longitude = clamp((typeof options.longitude == 'number' ? options.longitude : 0.0), -90.0, 90.0);
-    this.map = { api: null, marker: null };
     this.opacity = clamp((typeof options.opacity == 'number' ? options.opacity : 1.0), 0.0, 1.0);
     this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
@@ -113,8 +113,9 @@ var Mapsel = function(options) {
     if(!this.visible) {
         this.hide();
     } else {
-        this.init();
+        this.init(this.api);
     }
 };
 
+Mapsel.api = {};
 Mapsel.instances = 0;

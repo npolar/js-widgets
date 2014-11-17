@@ -8,7 +8,8 @@ var sources = [
 	'./src/mapsel.js',
 	'./src/prototype.js',
 	'./src/i18n.js',
-	'./src/style.js'
+	'./src/style.js',
+	'./src/api/google.js'
 ];
 
 gulp.task('compile', [], function() {
