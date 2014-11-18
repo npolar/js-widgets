@@ -12,6 +12,7 @@ For code examples, check out the [Mapsel demo](mapsel/demo.html) webpage.
 #### Usage:
 Mapsel-instances are created using ***new Mapsel(options)***, which accepts the following option-object properties:
 
+ * **api** - API used for maps (defaults to: ***leaflet***)
  * **background** - mapsel container element CSS-background (defaults to: ***#e3e3e3***)
  * **container** - reference to mapsel element container (defaults to: ***null***)
  * **height** - mapsel container element height in pixels (defaults to: ***250***)
@@ -24,10 +25,16 @@ Mapsel-instances are created using ***new Mapsel(options)***, which accepts the 
  * **visible** - initially hide the mapsel container if set to **false** (defaults to: **true**)
  * **width** - mapsel container element width in pixels (defaults to: ***200***)
 
+#### Map APIs:
+The following map APIs are bundled with mapsel:
+
+ * **google** - Google Maps
+ * **leaflet** - Leaflet with OpenStreetMap tile server *(default)*
+
 #### Languages:
 The following *UTF-8 encoded* languages are bundled with mapsel:
 
- * **en** - English (default value)
+ * **en** - English *(default)*
  * **ja** - Japanese
  * **nb** - Norwegian (bokmål)
  * **nn** - Norwegian (nynorsk)
