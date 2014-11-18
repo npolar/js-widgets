@@ -541,7 +541,12 @@ Mapsel.i18n = {
                 zoom: 2
             });
             
-            L.tileLayer('http://tilestream.data.npolar.no/v2/WorldHax/{z}/{x}/{y}.png').addTo(self.map);
+            L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                attribution: '<a href="http://osm.org/copyright">OpenStreetMap</a>',
+                minZoom: 0,
+                maxZoom: 16
+                
+            }).addTo(self.map);
             
             // Initialize marker
             if(parent.radius) {
@@ -550,8 +555,8 @@ Mapsel.i18n = {
                 
                 self.map.on('dblclick', function(e) {
                     self.marker.setLatLng(e.latlng);
-                    parent.latitude = e.latlng.lat.toFixed(parent.precision);
-                    parent.longitude = e.latlng.lng.toFixed(parent.precision);
+                    parent.latitude = parent.elements.latInput.value = e.latlng.lat.toFixed(parent.precision);
+                    parent.longitude = parent.elements.lngInput.value = e.latlng.lng.toFixed(parent.precision);
                 });
                 
                 // TODO: Move/Resize events
