@@ -4,7 +4,7 @@ Various JavaScript widgets
 
 ## Mapsel
 Widget for selecting latitude and longitude from a map.<br>
-For code examples, check out the [Mapsel demo](mapsel/demo.html) webpage.
+For code examples, check out the [Mapsel demo](http://npolar.github.io/examples/mapsel/) webpage.
 
 #### Dependencies:
 * [Google Maps JavaScript API v3](https://developers.google.com/maps/documentation/javascript/)
