@@ -6,9 +6,6 @@ Various JavaScript widgets
 Widget for selecting latitude and longitude from a map.<br>
 For code examples, check out the [Mapsel demo](http://npolar.github.io/js-widgets/mapsel/demo/) webpage.
 
-#### Dependencies:
-* [Google Maps JavaScript API v3](https://developers.google.com/maps/documentation/javascript/)
-
 #### Usage:
 Mapsel-instances are created using ***new Mapsel(options)***, which accepts the following option-object properties:
 
@@ -28,8 +25,8 @@ Mapsel-instances are created using ***new Mapsel(options)***, which accepts the 
 #### Map APIs:
 The following map APIs are bundled with mapsel:
 
- * **google** - Google Maps
- * **leaflet** - Leaflet with OpenStreetMap tile server *(default)*
+ * **google** - [Google Maps JavaScript API](https://developers.google.com/maps/documentation/javascript/)
+ * **leaflet** - [Leaflet](http://leafletjs.com) with [OpenStreetMap](https://openstreetmap.org) tile server *(default)*
 
 #### Languages:
 The following *UTF-8 encoded* languages are bundled with mapsel:
