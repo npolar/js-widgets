@@ -61,7 +61,40 @@
                 'margin-top: 5px',
                 'padding: 2px 5px',
                 'width: 60%'
-            ]
+            ],
+            '.mapsel-icon': [
+                'background: #fff',
+                'border: 1px solid #333',
+                'border-radius: 2px',
+                'box-shadow: 0 0 3px 0 #3c3c3c',
+                'cursor: pointer'
+            ],
+            '.mapsel-icon:hover': [
+                'background: #ccc',
+                'box-shadow: 0 0 3px 0 #393939',
+            ],
+            '.mapsel-icon-move': [
+                'border-radius: 5px',
+                'cursor: move'
+            ],
+            '.mapsel-icon-resize-ns': [
+                'cursor: ns-resize'
+            ],
+            '.mapsel-icon-resize-ew': [
+                'cursor: ew-resize'
+            ],
+            '.mapsel-icon-resize-ne': [
+                'cursor: ne-resize'
+            ],
+            '.mapsel-icon-resize-nw': [
+                'cursor: nw-resize'
+            ],
+            '.mapsel-icon-resize-se': [
+                'cursor: se-resize'
+            ],
+            '.mapsel-icon-resize-sw': [
+                'cursor: sw-resize'
+            ],
         };
         
     styleElement.type = 'text/css';
