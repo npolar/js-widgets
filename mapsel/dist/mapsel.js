@@ -83,9 +83,9 @@ var Mapsel = function(options) {
     
     // Append mandatory fields to the fieldset element
     this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
-    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude });
+    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
     this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
-    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude });
+    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
     
     // Append a radius input-field to the fieldset element if radius-value is specified
     if(this.radius !== null) {
@@ -668,6 +668,24 @@ Mapsel.i18n = {
         this.map = null;
         this.marker = null;
         
+        function latLngWrapped(latLng) {
+            if(latLng && latLng.lat && latLng.lng) {
+                var ret = new L.LatLng(latLng.lat, latLng.lng);
+                
+                // Wrap latitude
+                while(ret.lat > 90.0)   ret.lat = -(180.0 - ret.lat);
+                while(ret.lat < -90.0)  ret.lat = ret.lat + 180.0;
+                
+                // Wrap longitude
+                while(ret.lng > 180.0)  ret.lng = -(360.0 - ret.lng);
+                while(ret.lng < -180.0) ret.lng = ret.lng + 360.0;
+                
+                return ret;
+            }
+            
+            return latLng;
+        }
+        
         if(typeof parent == 'object') {
             // Initialize map
             self.map = new L.Map(parent.elements.mapContainer, {
@@ -697,7 +715,7 @@ Mapsel.i18n = {
                 });
                 
                 self.marker.on('center_changed', function() {
-                    var latLng = self.marker.getLatLng(),
+                    var latLng = latLngWrapped(self.marker.getLatLng()),
                         newLat = Number(latLng.lat.toFixed(parent.precision)),
                         newLng = Number(latLng.lng.toFixed(parent.precision));
                         
@@ -749,7 +767,7 @@ Mapsel.i18n = {
                 });
                 
                 self.marker.on('move', function(e) {
-                    var latLng = e.latlng,
+                    var latLng = latLngWrapped(e.latlng),
                         newLat = Number(latLng.lat.toFixed(parent.precision)),
                         newLng = Number(latLng.lng.toFixed(parent.precision));
                         
