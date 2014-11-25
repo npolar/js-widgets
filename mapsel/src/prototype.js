@@ -15,8 +15,8 @@ Mapsel.prototype = {
     },
     
     hide: function() {
-        if(this.element) {
-            this.element.style.display = 'none';
+        if(this.elements.root) {
+            this.elements.root.style.display = 'none';
         }
         
         this.visible = false;
@@ -64,9 +64,9 @@ Mapsel.prototype = {
     },
     
     move: function(x, y, relative) {
-        if(this.element) {
-            this.element.style.left = (relative ? this.x += x : this.x = Math.max(x, 0)) + 'px';
-            this.element.style.top = (relative ? this.y += y : this.y = Math.max(y, 0)) + 'px';
+        if(this.elements.root) {
+            this.elements.root.style.left = (relative ? this.x += x : this.x = Math.max(x, 0)) + 'px';
+            this.elements.root.style.top = (relative ? this.y += y : this.y = Math.max(y, 0)) + 'px';
         }
     },
     
@@ -95,7 +95,7 @@ Mapsel.prototype = {
             inputWidthString = (100 - labelWidthPercent) + '%';
             
         // Calculate the map-container height
-        var mapHeight = this.height, baseStyle = window.getComputedStyle(this.element, null);
+        var mapHeight = this.height, baseStyle = window.getComputedStyle(this.elements.root, null);
         mapHeight -= (parseInt(baseStyle.borderTopWidth) + parseInt(baseStyle.borderBottomWidth));
         mapHeight -= (parseInt(baseStyle.paddingTop) + parseInt(baseStyle.paddingBottom));
         mapHeight -= this.elements.titleBar.offsetHeight;
@@ -111,14 +111,14 @@ Mapsel.prototype = {
             this.elements.radInput.style.width = inputWidthString;
         }
         
-        this.element.style.width = this.width + 'px';
-        this.element.style.height = this.height + 'px';
+        this.elements.root.style.width = this.width + 'px';
+        this.elements.root.style.height = this.height + 'px';
         this.elements.mapContainer.style.height = mapHeight + 'px';
     },
     
     show: function() {
-        if(this.element) {
-            this.element.style.display = 'block';
+        if(this.elements.root) {
+            this.elements.root.style.display = 'block';
             
             if(typeof this.api == 'object') {
                 this.api.center(this.latitude, this.longitude);

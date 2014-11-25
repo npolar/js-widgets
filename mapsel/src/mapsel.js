@@ -6,9 +6,6 @@
  */
 
 var Mapsel = function(options) {
-    options = options || {};
-    var self = this;
-    
     function clamp(value, min, max) {
         if(min > max) {
             var tmp = min;
@@ -19,26 +16,32 @@ var Mapsel = function(options) {
         return Math.min(max, Math.max(min, value));
     }
     
+    // Customisable options
+    options = options || {};
     this.api = options.api || 'google';
     this.background = options.background || '#e3e3e3';
     this.container = options.container || null;
     this.closeable = (options.closeable === false) ? false : true;
-    this.element = document.createElement('div');
-    this.elements = {};
-    this.events = {};
     this.font = { size: '14px' };
     this.height = options.height || 250;
-    this.instance = Mapsel.instances++;
+    this.northwest = options.northwest || null;
     this.language = options.language || 'en';
     this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
     this.longitude = clamp((typeof options.longitude == 'number' ? options.longitude : 0.0), -90.0, 90.0);
     this.opacity = clamp((typeof options.opacity == 'number' ? options.opacity : 1.0), 0.0, 1.0);
     this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
+    this.southeast = options.southeast || null;
     this.visible = (options.visible === false) ? false: true;
     this.width = options.width || 200;
     this.x = options.x || 0;
     this.y = options.y || 0;
+    
+    // Internal usage only
+    this.elements = { root: document.createElement('div') };
+    this.events = {};
+    this.instance = Mapsel.instances++;
+    var self = this, rootElement = this.elements.root;
     
     // Proxy function used to append children to an element
     function elemAppendFunc(elem, tag, attribs, value) {
@@ -60,8 +63,8 @@ var Mapsel = function(options) {
         return newElem;
     }
     
-    this.element.append = function(tag, attribs, value) {
-        return elemAppendFunc(self.element, tag, attribs, value);
+    rootElement.append = function(tag, attribs, value) {
+        return elemAppendFunc(self.elements.root, tag, attribs, value);
     };
     
     // Determine the input step-value based on precision
@@ -71,9 +74,9 @@ var Mapsel = function(options) {
     }
     
     // Append sub-element container elements
-    this.elements.titleBar = this.element.append('header');
-    this.elements.mapContainer = this.element.append('div', { id: 'mapsel_map_' + this.instance });
-    this.elements.fieldset = this.element.append('fieldset');
+    this.elements.titleBar = rootElement.append('header');
+    this.elements.mapContainer = rootElement.append('div', { id: 'mapsel_map_' + this.instance });
+    this.elements.fieldset = rootElement.append('fieldset');
     
     // Append a close-button to the titleBar element if closeable
     if(this.closeable) {
@@ -94,16 +97,16 @@ var Mapsel = function(options) {
     }
     
     // Set element specific styles
-    this.element.className = 'mapsel';
-    this.element.style.position = (this.container ? 'relative' : 'absolute');
-    this.element.style.background = this.background;
-    this.element.style.fontSize = this.font.size;
-    this.element.style.opacity = this.opacity;
+    rootElement.className = 'mapsel';
+    rootElement.style.position = (this.container ? 'relative' : 'absolute');
+    rootElement.style.background = this.background;
+    rootElement.style.fontSize = this.font.size;
+    rootElement.style.opacity = this.opacity;
     
     // Append the current container element to the document
     if(this.container) {
-        this.container.appendChild(this.element);
-    } else document.body.appendChild(this.element);
+        this.container.appendChild(rootElement);
+    } else document.body.appendChild(rootElement);
     
     // Set element position and size
     this.move(this.x, this.y);
