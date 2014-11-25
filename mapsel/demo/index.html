@@ -89,7 +89,7 @@
                 <ul>
                     <li>Google API</li>
                     <li>English</li>
-                    <li>Custom size and coordinates</li>
+                    <li>Box-selection and custom size</li>
                 </ul>
             </div>
         </div>
@@ -149,9 +149,8 @@
                 container: document.getElementById('mapselG'),
                 height: 350,
                 language: 'en',
-                latitude: 78.65,
-                longitude: 19.52,
-                radius: 252000,
+                northeast: [ 66.8, -12.3 ],
+                southwest: [ 62.9, -25.2 ],
                 width: 445
             });
         </script>
