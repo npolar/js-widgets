@@ -6,9 +6,6 @@
  */
 
 var Mapsel = function(options) {
-    options = options || {};
-    var self = this;
-    
     function clamp(value, min, max) {
         if(min > max) {
             var tmp = min;
@@ -19,26 +16,32 @@ var Mapsel = function(options) {
         return Math.min(max, Math.max(min, value));
     }
     
+    // Customisable options
+    options = options || {};
     this.api = options.api || 'google';
     this.background = options.background || '#e3e3e3';
     this.container = options.container || null;
     this.closeable = (options.closeable === false) ? false : true;
-    this.element = document.createElement('div');
-    this.elements = {};
-    this.events = {};
     this.font = { size: '14px' };
     this.height = options.height || 250;
-    this.instance = Mapsel.instances++;
+    this.northwest = options.northwest || null;
     this.language = options.language || 'en';
     this.latitude = clamp((typeof options.latitude == 'number' ? options.latitude : 65.0), -90.0, 90.0);
     this.longitude = clamp((typeof options.longitude == 'number' ? options.longitude : 0.0), -90.0, 90.0);
     this.opacity = clamp((typeof options.opacity == 'number' ? options.opacity : 1.0), 0.0, 1.0);
     this.precision = clamp((typeof options.precision == 'number' ? options.precision : 2), 0, 8);   // Number of coordinate decimals
     this.radius = Math.max(Math.round(options.radius || 0), 0) || null;
+    this.southeast = options.southeast || null;
     this.visible = (options.visible === false) ? false: true;
     this.width = options.width || 200;
     this.x = options.x || 0;
     this.y = options.y || 0;
+    
+    // Internal usage only
+    this.elements = { root: document.createElement('div') };
+    this.events = {};
+    this.instance = Mapsel.instances++;
+    var self = this, rootElement = this.elements.root;
     
     // Proxy function used to append children to an element
     function elemAppendFunc(elem, tag, attribs, value) {
@@ -60,8 +63,8 @@ var Mapsel = function(options) {
         return newElem;
     }
     
-    this.element.append = function(tag, attribs, value) {
-        return elemAppendFunc(self.element, tag, attribs, value);
+    rootElement.append = function(tag, attribs, value) {
+        return elemAppendFunc(self.elements.root, tag, attribs, value);
     };
     
     // Determine the input step-value based on precision
@@ -71,39 +74,39 @@ var Mapsel = function(options) {
     }
     
     // Append sub-element container elements
-    this.elements.titleBar = this.element.append('header');
-    this.elements.mapContainer = this.element.append('div', { id: 'mapsel_map_' + this.instance });
-    this.elements.fieldset = this.element.append('fieldset');
+    this.elements.titleBar = rootElement.append('header');
+    this.elements.mapContainer = rootElement.append('div', { id: 'mapsel_map_' + this.instance });
+    this.elements.fieldset = rootElement.append('fieldset');
     
     // Append a close-button to the titleBar element if closeable
     if(this.closeable) {
-        this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
+        this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n(this.language, 'CLOSE') }, 'X');
         this.elements.closeButton.addEventListener('click', function() { self.hide(); });
     }
     
     // Append mandatory fields to the fieldset element
-    this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
-    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
-    this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
-    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
+    this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n(this.language, 'LATITUDE'));
+    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LATITUDE'), min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
+    this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n(this.language, 'LONGITUDE'));
+    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LONGITUDE'), min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
     
     // Append a radius input-field to the fieldset element if radius-value is specified
     if(this.radius !== null) {
-        this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n[this.language].RADIUS);
-        this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
+        this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n(this.language, 'RADIUS'));
+        this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'RADIUS'), step: 1, value: this.radius });
     }
     
     // Set element specific styles
-    this.element.className = 'mapsel';
-    this.element.style.position = (this.container ? 'relative' : 'absolute');
-    this.element.style.background = this.background;
-    this.element.style.fontSize = this.font.size;
-    this.element.style.opacity = this.opacity;
+    rootElement.className = 'mapsel';
+    rootElement.style.position = (this.container ? 'relative' : 'absolute');
+    rootElement.style.background = this.background;
+    rootElement.style.fontSize = this.font.size;
+    rootElement.style.opacity = this.opacity;
     
     // Append the current container element to the document
     if(this.container) {
-        this.container.appendChild(this.element);
-    } else document.body.appendChild(this.element);
+        this.container.appendChild(rootElement);
+    } else document.body.appendChild(rootElement);
     
     // Set element position and size
     this.move(this.x, this.y);
@@ -137,8 +140,8 @@ Mapsel.prototype = {
     },
     
     hide: function() {
-        if(this.element) {
-            this.element.style.display = 'none';
+        if(this.elements.root) {
+            this.elements.root.style.display = 'none';
         }
         
         this.visible = false;
@@ -186,9 +189,9 @@ Mapsel.prototype = {
     },
     
     move: function(x, y, relative) {
-        if(this.element) {
-            this.element.style.left = (relative ? this.x += x : this.x = Math.max(x, 0)) + 'px';
-            this.element.style.top = (relative ? this.y += y : this.y = Math.max(y, 0)) + 'px';
+        if(this.elements.root) {
+            this.elements.root.style.left = (relative ? this.x += x : this.x = Math.max(x, 0)) + 'px';
+            this.elements.root.style.top = (relative ? this.y += y : this.y = Math.max(y, 0)) + 'px';
         }
     },
     
@@ -217,7 +220,7 @@ Mapsel.prototype = {
             inputWidthString = (100 - labelWidthPercent) + '%';
             
         // Calculate the map-container height
-        var mapHeight = this.height, baseStyle = window.getComputedStyle(this.element, null);
+        var mapHeight = this.height, baseStyle = window.getComputedStyle(this.elements.root, null);
         mapHeight -= (parseInt(baseStyle.borderTopWidth) + parseInt(baseStyle.borderBottomWidth));
         mapHeight -= (parseInt(baseStyle.paddingTop) + parseInt(baseStyle.paddingBottom));
         mapHeight -= this.elements.titleBar.offsetHeight;
@@ -233,14 +236,14 @@ Mapsel.prototype = {
             this.elements.radInput.style.width = inputWidthString;
         }
         
-        this.element.style.width = this.width + 'px';
-        this.element.style.height = this.height + 'px';
+        this.elements.root.style.width = this.width + 'px';
+        this.elements.root.style.height = this.height + 'px';
         this.elements.mapContainer.style.height = mapHeight + 'px';
     },
     
     show: function() {
-        if(this.element) {
-            this.element.style.display = 'block';
+        if(this.elements.root) {
+            this.elements.root.style.display = 'block';
             
             if(typeof this.api == 'object') {
                 this.api.center(this.latitude, this.longitude);
@@ -260,43 +263,71 @@ Mapsel.prototype = {
  * Norsk Polarinstutt 2014, http://npolar.no/
  */
 
-Mapsel.i18n = {
-    en: {
-        CLOSE:      'Click to close',
-        LATITUDE:   'Latitude',
-        LONGITUDE:  'Longitude',
-        RADIUS:     'Radius'
-    },
-    ja: {
-        CLOSE:      '閉じます',
-        LATITUDE:   '緯度',
-        LONGITUDE:  '経度',
-        RADIUS:     '半径'
-    },
-    nb: {
-        CLOSE:      'Klikk for å lukke',
-        LATITUDE:   'Breddegrad',
-        LONGITUDE:  'Lengdegrad',
-        RADIUS:     'Radius'
-    },
-    nn: {
-        CLOSE:      'Klikk for å stengje',
-        LATITUDE:   'Breiddegrad',
-        LONGITUDE:  'Lengdegrad',
-        RADIUS:     'Radius'
-    },
-    yue: {
-        CLOSE:      '點擊關閉',
-        LATITUDE:   '緯度',
-        LONGITUDE:  '經度',
-        RADIUS:     '半徑'
-    },
-    zh: {
-        CLOSE:      '点击关闭',
-        LATITUDE:   '纬度',
-        LONGITUDE:  '经度',
-        RADIUS:     '半径'
+Mapsel.i18n = function(lang, code) {
+    if(Mapsel.i18n[lang] && Mapsel.i18n[lang][code]) {
+        return Mapsel.i18n[lang][code];
+    } else if(Mapsel.i18n.alias[lang]) {
+        for(var i in Mapsel.i18n.alias[lang]) {
+            var alias = Mapsel.i18n.alias[lang][i];
+            
+            if(Mapsel.i18n[alias] && Mapsel.i18n[alias][code]) {
+                return Mapsel.i18n[alias][code];
+            }
+        }
     }
+    
+    // Use English (en) as secondary fallback
+    return Mapsel.i18n.en[code];
+};
+
+// Language aliases as primary fallback
+Mapsel.i18n.alias = {
+    no: [ 'nb', 'nn' ],
+    nb: [ 'nn' ],
+    nn: [ 'nb' ]
+};
+
+// Language definitions
+Mapsel.i18n.en = {
+    CLOSE:      'Click to close',
+    LATITUDE:   'Latitude',
+    LONGITUDE:  'Longitude',
+    RADIUS:     'Radius'
+};
+
+Mapsel.i18n.ja = {
+    CLOSE:      '閉じます',
+    LATITUDE:   '緯度',
+    LONGITUDE:  '経度',
+    RADIUS:     '半径'
+};
+
+Mapsel.i18n.nb = {
+    CLOSE:      'Klikk for å lukke',
+    LATITUDE:   'Breddegrad',
+    LONGITUDE:  'Lengdegrad',
+    RADIUS:     'Radius'
+};
+
+Mapsel.i18n.nn = {
+    CLOSE:      'Klikk for å stengje',
+    LATITUDE:   'Breiddegrad',
+    LONGITUDE:  'Lengdegrad',
+    RADIUS:     'Radius'
+};
+
+Mapsel.i18n.yue = {
+    CLOSE:      '點擊關閉',
+    LATITUDE:   '緯度',
+    LONGITUDE:  '經度',
+    RADIUS:     '半徑'
+};
+
+Mapsel.i18n.zh = {
+    CLOSE:      '点击关闭',
+    LATITUDE:   '纬度',
+    LONGITUDE:  '经度',
+    RADIUS:     '半径'
 };
 
 /**
