@@ -62,6 +62,13 @@
                 'padding: 2px 5px',
                 'width: 60%'
             ],
+            '.mapsel-input-pair': [
+                'display: inline-block',
+                'width: 60%'
+            ],
+            '.mapsel-input-pair input': [
+                'width: 50% !important'
+            ],
             '.mapsel-icon': [
                 'background: #fff',
                 'border: 1px solid #333',

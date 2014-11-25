@@ -25,21 +25,18 @@ Mapsel.prototype = {
     focus: function(element) {
         if(this.elements) {
             switch(element) {
-            case 'lat':
             case 'latitude':
                 if(this.elements.latInput) {
                     this.elements.latInput.focus();
                 }
                 break;
                 
-            case 'lng':
             case 'longitude':
                 if(this.elements.lngInput) {
                     this.elements.lngInput.focus();
                 }
                 break;
                 
-            case 'rad':
             case 'radius':
                 if(this.elements.radInput) {
                     this.elements.radInput.focus();
@@ -75,21 +72,27 @@ Mapsel.prototype = {
         this.height = Math.max((relative ? this.height += height : height), 200);
         
         // Obtain the pixel width of the longest printable label
-        var labelWidth = 0, widthTestElem = document.createElement('span'), testStrings = [ 'LATITUDE', 'LONGITUDE', 'RADIUS' ];
+        var labelWidth = 0, widthTestElem = document.createElement('span'), testStrings = [];
         widthTestElem.style.fontSize = this.font.size;
         widthTestElem.style.visibility = 'hidden';
+        
+        if(this.northeast !== null && this.southwest !== null) {
+            testStrings.push('NORTHEAST', 'SOUTHWEST');
+        } else if(this.latitude !== null && this.longitude !== null) {
+            testStrings.push('LATITUDE', 'LONGITUDE');
             
-        document.body.appendChild(widthTestElem);
-        for(var l in Mapsel.i18n[this.language]) {
-            if(testStrings.indexOf(l) == -1) {
-                continue;
+            if(this.radius !== null) {
+                testStrings.push('RADIUS');
             }
-            
-            widthTestElem.innerHTML = Mapsel.i18n[this.language][l];
-            labelWidth = Math.max(labelWidth, widthTestElem.offsetWidth);
         }
         
+        document.body.appendChild(widthTestElem);
+        for(var i in testStrings) {
+            widthTestElem.innerHTML = Mapsel.i18n(this.language, testStrings[i]);
+            labelWidth = Math.max(labelWidth, widthTestElem.offsetWidth);
+        }
         document.body.removeChild(widthTestElem);
+        
         var labelWidthPercent = Math.ceil(((labelWidth + 15) / this.width) * 100),
             labelWidthString = labelWidthPercent + '%',
             inputWidthString = (100 - labelWidthPercent) + '%';
@@ -100,15 +103,19 @@ Mapsel.prototype = {
         mapHeight -= (parseInt(baseStyle.paddingTop) + parseInt(baseStyle.paddingBottom));
         mapHeight -= this.elements.titleBar.offsetHeight;
         mapHeight -= this.elements.fieldset.offsetHeight;
-            
-        this.elements.latLabel.style.width = labelWidthString;
-        this.elements.latInput.style.width = inputWidthString;
-        this.elements.lngLabel.style.width = labelWidthString;
-        this.elements.lngInput.style.width = inputWidthString;
         
-        if(this.radius !== null) {
-            this.elements.radLabel.style.width = labelWidthString;
-            this.elements.radInput.style.width = inputWidthString;
+        var labelElements = [ 'latLabel', 'lngLabel', 'radLabel', 'neLabel', 'swLabel' ];
+        for(var le in labelElements) {
+            if(this.elements[labelElements[le]]) {
+                this.elements[labelElements[le]].style.width = labelWidthString;
+            }
+        }
+        
+        var inputElements = [ 'latInput', 'lngInput', 'radInput', 'neGroup', 'swGroup' ];
+        for(var ie in inputElements) {
+            if(this.elements[inputElements[ie]]) {
+                this.elements[inputElements[ie]].style.width = inputWidthString;
+            }
         }
         
         this.elements.root.style.width = this.width + 'px';

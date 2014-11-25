@@ -34,7 +34,9 @@ Mapsel.i18n.en = {
     CLOSE:      'Click to close',
     LATITUDE:   'Latitude',
     LONGITUDE:  'Longitude',
-    RADIUS:     'Radius'
+    NORTHEAST:  'Northeast',
+    RADIUS:     'Radius',
+    SOUTHWEST:  'Southwest'
 };
 
 Mapsel.i18n.ja = {

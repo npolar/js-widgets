@@ -145,105 +145,110 @@
                 attribution: '<a href="http://osm.org/copyright">OpenStreetMap</a>',
                 minZoom: 0,
                 maxZoom: 16
-                
             }).addTo(self.map);
             
             // Initialize marker
-            if(parent.radius) {
-                self.marker = new L.MapselCircle(self.map.getCenter(), parent.radius, {
-                    draggable: true,
-                    editable: true
-                }).addTo(self.map);
+            if(parent.northeast !== null && parent.southwest !== null) {
                 
-                self.map.on('dblclick', function(e) {
-                    self.marker.setLatLng(e.latlng);
-                    parent.latitude = parent.elements.latInput.value = e.latlng.lat.toFixed(parent.precision);
-                    parent.longitude = parent.elements.lngInput.value = e.latlng.lng.toFixed(parent.precision);
-                });
+                // TODO
                 
-                self.marker.on('center_changed', function() {
-                    var latLng = latLngWrapped(self.marker.getLatLng()),
-                        newLat = Number(latLng.lat.toFixed(parent.precision)),
-                        newLng = Number(latLng.lng.toFixed(parent.precision));
-                        
-                    if(newLat != parent.latitude) {
-                        parent.elements.latInput.value = parent.latitude = newLat;
-                        
-                        if(typeof parent.events.latitude == 'function') {
-                            parent.events.latitude(newLat);
-                        }
-                    }
+            } else if(parent.latitude !== null && parent.longitude !== null) {
+                if(parent.radius !== null) {
+                    self.marker = new L.MapselCircle(self.map.getCenter(), parent.radius, {
+                        draggable: true,
+                        editable: true
+                    }).addTo(self.map);
                     
-                    if(newLng != parent.longitude) {
-                        parent.elements.lngInput.value = parent.longitude = newLng;
-                        
-                        if(typeof parent.events.longitude == 'function') {
-                            parent.events.longitude(newLng);
-                        }
-                    }
-                });
-                
-                self.marker.on('radius_changed', function() {
-                    parent.elements.radInput.value = parent.radius = Math.round(self.marker.getRadius());
+                    self.map.on('dblclick', function(e) {
+                        self.marker.setLatLng(e.latlng);
+                        parent.latitude = parent.elements.latInput.value = e.latlng.lat.toFixed(parent.precision);
+                        parent.longitude = parent.elements.lngInput.value = e.latlng.lng.toFixed(parent.precision);
+                    });
                     
-                    if(typeof parent.events.radius == 'function') {
-                        parent.events.radius(parent.radius);
-                    }
-                });
-                
-                parent.elements.latInput.addEventListener('change', function(e) {
-                    self.marker.setLatLng({ lat: (parent.latitude = Number(e.target.value)), lng: parent.longitude });
-                    self.map.setView(self.marker.getLatLng());
-                });
-                
-                parent.elements.lngInput.addEventListener('change', function(e) {
-                    self.marker.setLatLng({ lat: parent.latitude, lng: (parent.longitude = Number(e.target.value)) });
-                    self.map.setView(self.marker.getLatLng());
-                });
-                
-                parent.elements.radInput.addEventListener('change', function(e) {
-                    self.marker.setRadius(parent.radius = Number(e.target.value));
-                });
-            } else {
-                self.marker = new L.Marker(self.map.getCenter(), {
-                    draggable: true
-                }).addTo(self.map);
-                
-                self.map.on('dblclick', function(e) {
-                    self.marker.setLatLng(e.latlng);
-                });
-                
-                self.marker.on('move', function(e) {
-                    var latLng = latLngWrapped(e.latlng),
-                        newLat = Number(latLng.lat.toFixed(parent.precision)),
-                        newLng = Number(latLng.lng.toFixed(parent.precision));
-                        
-                    if(newLat != parent.latitude) {
-                        parent.elements.latInput.value = parent.latitude = newLat;
-                        
-                        if(typeof parent.events.latitude == 'function') {
-                            parent.events.latitude(newLat);
+                    self.marker.on('center_changed', function() {
+                        var latLng = latLngWrapped(self.marker.getLatLng()),
+                            newLat = Number(latLng.lat.toFixed(parent.precision)),
+                            newLng = Number(latLng.lng.toFixed(parent.precision));
+                            
+                        if(newLat != parent.latitude) {
+                            parent.elements.latInput.value = parent.latitude = newLat;
+                            
+                            if(typeof parent.events.latitude == 'function') {
+                                parent.events.latitude(newLat);
+                            }
                         }
-                    }
+                        
+                        if(newLng != parent.longitude) {
+                            parent.elements.lngInput.value = parent.longitude = newLng;
+                            
+                            if(typeof parent.events.longitude == 'function') {
+                                parent.events.longitude(newLng);
+                            }
+                        }
+                    });
                     
-                    if(newLng != parent.longitude) {
-                        parent.elements.lngInput.value = parent.longitude = newLng;
+                    self.marker.on('radius_changed', function() {
+                        parent.elements.radInput.value = parent.radius = Math.round(self.marker.getRadius());
                         
-                        if(typeof parent.events.longitude == 'function') {
-                            parent.events.longitude(newLng);
+                        if(typeof parent.events.radius == 'function') {
+                            parent.events.radius(parent.radius);
                         }
-                    }
-                });
-                
-                parent.elements.latInput.addEventListener('change', function(e) {
-                    self.marker.setLatLng({ lat: Number(e.target.value), lng: parent.longitude });
-                    self.map.setView(self.marker.getLatLng());
-                });
-                
-                parent.elements.lngInput.addEventListener('change', function(e) {
-                    self.marker.setLatLng({ lat: parent.latitude, lng: Number(e.target.value) });
-                    self.map.setView(self.marker.getLatLng());
-                });
+                    });
+                    
+                    parent.elements.latInput.addEventListener('change', function(e) {
+                        self.marker.setLatLng({ lat: (parent.latitude = Number(e.target.value)), lng: parent.longitude });
+                        self.map.setView(self.marker.getLatLng());
+                    });
+                    
+                    parent.elements.lngInput.addEventListener('change', function(e) {
+                        self.marker.setLatLng({ lat: parent.latitude, lng: (parent.longitude = Number(e.target.value)) });
+                        self.map.setView(self.marker.getLatLng());
+                    });
+                    
+                    parent.elements.radInput.addEventListener('change', function(e) {
+                        self.marker.setRadius(parent.radius = Number(e.target.value));
+                    });
+                } else {
+                    self.marker = new L.Marker(self.map.getCenter(), {
+                        draggable: true
+                    }).addTo(self.map);
+                    
+                    self.map.on('dblclick', function(e) {
+                        self.marker.setLatLng(e.latlng);
+                    });
+                    
+                    self.marker.on('move', function(e) {
+                        var latLng = latLngWrapped(e.latlng),
+                            newLat = Number(latLng.lat.toFixed(parent.precision)),
+                            newLng = Number(latLng.lng.toFixed(parent.precision));
+                            
+                        if(newLat != parent.latitude) {
+                            parent.elements.latInput.value = parent.latitude = newLat;
+                            
+                            if(typeof parent.events.latitude == 'function') {
+                                parent.events.latitude(newLat);
+                            }
+                        }
+                        
+                        if(newLng != parent.longitude) {
+                            parent.elements.lngInput.value = parent.longitude = newLng;
+                            
+                            if(typeof parent.events.longitude == 'function') {
+                                parent.events.longitude(newLng);
+                            }
+                        }
+                    });
+                    
+                    parent.elements.latInput.addEventListener('change', function(e) {
+                        self.marker.setLatLng({ lat: Number(e.target.value), lng: parent.longitude });
+                        self.map.setView(self.marker.getLatLng());
+                    });
+                    
+                    parent.elements.lngInput.addEventListener('change', function(e) {
+                        self.marker.setLatLng({ lat: parent.latitude, lng: Number(e.target.value) });
+                        self.map.setView(self.marker.getLatLng());
+                    });
+                }
             }
         }
     };
