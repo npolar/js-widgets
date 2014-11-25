@@ -43,33 +43,43 @@ Mapsel.i18n.ja = {
     CLOSE:      '閉じます',
     LATITUDE:   '緯度',
     LONGITUDE:  '経度',
-    RADIUS:     '半径'
+    NORTHEAST:  '北東',
+    RADIUS:     '半径',
+    SOUTHWEST:  '南西'
 };
 
 Mapsel.i18n.nb = {
     CLOSE:      'Klikk for å lukke',
     LATITUDE:   'Breddegrad',
     LONGITUDE:  'Lengdegrad',
-    RADIUS:     'Radius'
+    NORTHEAST:  'Nordøst',
+    RADIUS:     'Radius',
+    SOUTHWEST:  'Sydvest'
 };
 
 Mapsel.i18n.nn = {
     CLOSE:      'Klikk for å stengje',
     LATITUDE:   'Breiddegrad',
     LONGITUDE:  'Lengdegrad',
-    RADIUS:     'Radius'
+    NORTHEAST:  'Nordaust',
+    RADIUS:     'Radius',
+    SOUTHWEST:  'Sørvest'
 };
 
 Mapsel.i18n.yue = {
     CLOSE:      '點擊關閉',
     LATITUDE:   '緯度',
     LONGITUDE:  '經度',
-    RADIUS:     '半徑'
+    NORTHEAST:  '東北',
+    RADIUS:     '半徑',
+    SOUTHWEST:  '西南'
 };
 
 Mapsel.i18n.zh = {
     CLOSE:      '点击关闭',
     LATITUDE:   '纬度',
     LONGITUDE:  '经度',
-    RADIUS:     '半径'
+    NORTHEAST:  '东北',
+    RADIUS:     '半径',
+    SOUTHWEST:  '西南'
 };
