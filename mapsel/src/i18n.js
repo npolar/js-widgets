@@ -18,9 +18,18 @@ Mapsel.i18n = function(lang, code) {
         }
     }
     
-    // Use English (en) as fallback
+    // Use English (en) as secondary fallback
     return Mapsel.i18n.en[code];
 };
+
+// Language aliases as primary fallback
+Mapsel.i18n.alias = {
+    no: [ 'nb', 'nn' ],
+    nb: [ 'nn' ],
+    nn: [ 'nb' ]
+};
+
+// Language definitions
 Mapsel.i18n.en = {
     CLOSE:      'Click to close',
     LATITUDE:   'Latitude',
@@ -61,10 +70,4 @@ Mapsel.i18n.zh = {
     LATITUDE:   '纬度',
     LONGITUDE:  '经度',
     RADIUS:     '半径'
-};
-
-Mapsel.i18n.alias = {
-    no: [ 'nb', 'nn' ],
-    nb: [ 'nn' ],
-    nn: [ 'nb' ]
 };
