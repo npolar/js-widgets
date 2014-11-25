@@ -80,20 +80,20 @@ var Mapsel = function(options) {
     
     // Append a close-button to the titleBar element if closeable
     if(this.closeable) {
-        this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n[this.language].CLOSE }, 'X');
+        this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n(this.language, 'CLOSE') }, 'X');
         this.elements.closeButton.addEventListener('click', function() { self.hide(); });
     }
     
     // Append mandatory fields to the fieldset element
-    this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n[this.language].LATITUDE);
-    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LATITUDE, min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
-    this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n[this.language].LONGITUDE);
-    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].LONGITUDE, min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
+    this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n(this.language, 'LATITUDE'));
+    this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LATITUDE'), min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
+    this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n(this.language, 'LONGITUDE'));
+    this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LONGITUDE'), min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
     
     // Append a radius input-field to the fieldset element if radius-value is specified
     if(this.radius !== null) {
-        this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n[this.language].RADIUS);
-        this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n[this.language].RADIUS, step: 1, value: this.radius });
+        this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n(this.language, 'RADIUS'));
+        this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'RADIUS'), step: 1, value: this.radius });
     }
     
     // Set element specific styles
