@@ -12,6 +12,7 @@ Mapsel-instances are created using ***new Mapsel(options)***, which accepts the 
  * **api** - API used for maps (defaults to: ***leaflet***)
  * **background** - mapsel container element CSS-background (defaults to: ***#e3e3e3***)
  * **container** - reference to mapsel element container (defaults to: ***null***)
+ * **font** - custom font styling using the following format: *weight style size color family* (all values are optional)
  * **height** - mapsel container element height in pixels (defaults to: ***250***)
  * **language** - language code used by text translation (defaults to: ***en***)
  * **latitude** - initial latitude value (defaults to: ***65.0***)
