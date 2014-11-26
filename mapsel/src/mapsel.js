@@ -22,7 +22,7 @@ var Mapsel = function(options) {
     this.background = options.background || '#e3e3e3';
     this.container = options.container || null;
     this.closeable = (options.closeable === false) ? false : true;
-    this.font = { size: '14px' };
+    this.font = options.font || { color: '#000', size: '14px' };
     this.height = options.height || 250;
     this.northeast = options.northeast || null;
     this.language = options.language || 'en';
@@ -73,6 +73,46 @@ var Mapsel = function(options) {
         stepString += (i == (this.precision - 1) ? 1 : 0);
     }
     
+    // Ensure correct font-object format (weight? style? size? color? family?)
+    if(typeof this.font == 'string') {
+        var fontObject = {},
+            fontOptions = this.font.split(' '),
+            fontOptionIndex = 0,
+            fontWeights = 'normal,bold,bolder,lighter,initial,inherit'.split(','),
+            fontStyles = 'normal,italic,oblique,initial,inherit'.split(','),
+            fontColors = 'aqua,black,blue,fuchsia,gray,green,lime,maroon,navy,olive,orange,purple,red,silver,teal,white,yellow'.split(','),
+            fontFamilies = 'serif,sans-serif,cursive,fantasy,monospace'.split(',');
+            
+        // Set font-weight if defined
+        if(typeof fontOptions[fontOptionIndex] == 'string' && fontWeights.indexOf(fontOptions[fontOptionIndex]) != -1) {
+            fontObject.weight = fontOptions[fontOptionIndex++];
+        } else if((Number(fontOptions[fontOptionIndex]) / 100) >= 1 && (Number(fontOptions[fontOptionIndex]) / 100) <= 900) {
+            fontObject.weight = Number(fontOptions[fontOptionIndex++]);
+        }
+        
+        // Set font-style if defined
+        if(fontStyles.indexOf(fontOptions[fontOptionIndex]) != -1) {
+            fontObject.style = fontOptions[fontOptionIndex++];
+        }
+        
+        // Set font-size if defined
+        if(/^\d+(px|em|pc|in|mm|%)$/.test(fontOptions[fontOptionIndex])) {
+            fontObject.size = fontOptions[fontOptionIndex++];
+        }
+        
+        // Set font-color if defined
+        if((fontColors.indexOf(fontOptions[fontOptionIndex]) != -1) || /^(#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})|rgb\(\s?\d{1,3}%?,\s?\d{1,3}%?,\s?\d{1,3}%?\s?\))$/.test(fontOptions[fontOptionIndex])) {
+            fontObject.color = fontOptions[fontOptionIndex++];
+        }
+        
+        // Set font-family if defined
+        if((fontFamilies.indexOf(fontOptions[fontOptionIndex]) != -1) || /^[-a-zA-Z0-9'", ]+$/.test(fontOptions[fontOptionIndex])) {
+            fontObject.family = fontOptions[fontOptionIndex++];
+        }
+        
+        this.font = fontObject;
+    }
+    
     // Append sub-element container elements
     this.elements.titleBar = rootElement.append('header');
     this.elements.mapContainer = rootElement.append('div', { id: 'mapsel_map_' + this.instance });
@@ -120,8 +160,15 @@ var Mapsel = function(options) {
     rootElement.className = 'mapsel';
     rootElement.style.position = (this.container ? 'relative' : 'absolute');
     rootElement.style.background = this.background;
-    rootElement.style.fontSize = this.font.size;
     rootElement.style.opacity = this.opacity;
+    
+    // Set element specific font-styles (weight? style? size? color? family?)
+    var fontStyleMap = { weight: 'fontWeight', style: 'fontStyle', size: 'fontSize', color: 'color', family: 'fontFamily' };
+    for(var f in fontStyleMap) {
+        if(this.font[f]) {
+            rootElement.style[fontStyleMap[f]] = this.font[f];
+        }
+    }
     
     // Append the current container element to the document
     if(this.container) {

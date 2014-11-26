@@ -27,18 +27,22 @@
                 'margin: 0',
                 'padding: 0'
             ],
+            '.mapsel header': [
+                'font-family: sans-serif',
+                'font-size: 14px',
+                'font-style: normal'
+            ],
             '.mapsel header a': [
-                'color: #aaa',
+                'color: #666',
                 'cursor: pointer',
                 'display: inline-block',
-                'font-size: inherit',
                 'font-weight: bold',
                 'margin: 0 2px 5px 0',
                 'text-decoration: none',
-                'text-shadow: 0 0 2px #ccc'
+                'text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6)'
             ],
             '.mapsel header a:hover': [
-                'text-shadow: 0 0 1px #333'
+                'text-shadow: 0 0 2px rgba(0, 0, 0, 0.8)'
             ],
             '.mapsel > div': [
                 'border: 1px solid #aaa',
