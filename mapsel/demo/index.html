@@ -34,14 +34,14 @@
     <body>
         <div>
             <div class="container" id="mapselA">
-                <a href="#" onclick="mapselA.show()">Example A</a>
+                <a href="#" onclick="mapselA.show()" title="Click to show/center">Example A</a>
                 <ul>
                     <li>Default settings</li>
                 </ul>
             </div>
             
             <div class="container" id="mapselB">
-                <a href="#" onclick="mapselB.show()">Example B</a>
+                <a href="#" onclick="mapselB.show()" title="Click to show/center">Example B</a>
                 <ul>
                     <li>Leaflet API</li>
                     <li>Norwegian (Bokmål)</li>
@@ -49,7 +49,7 @@
             </div>
             
             <div class="container" id="mapselC">
-                <a href="#" onclick="mapselC.show()">Example C</a>
+                <a href="#" onclick="mapselC.show()" title="Click to show/center">Example C</a>
                 <ul>
                     <li>Google API</li>
                     <li>Norwegian (Nynorsk)</li>
@@ -58,7 +58,7 @@
             </div>
             
             <div class="container" id="mapselD">
-                <a href="#" onclick="mapselD.show()">Example D</a>
+                <a href="#" onclick="mapselD.show()" title="Click to show/center">Example D</a>
                 <ul>
                     <li>Leaflet API</li>
                     <li>Chinese (Simplified)</li>
@@ -67,16 +67,25 @@
             </div>
             
             <div class="container" id="mapselE">
-                <a href="#" onclick="mapselE.show()">Example E</a>
+                <a href="#" onclick="mapselE.show()" title="Click to show/center">Example E</a>
                 <ul>
                     <li>Google API</li>
                     <li>Cantonese (Traditional)</li>
-                    <li>Hidden, with radius</li>
+                    <li>Custom styling</li>
                 </ul>
             </div>
             
             <div class="container" id="mapselF">
-                <a href="#" onclick="mapselF.show()">Example F</a>
+                <a href="#" onclick="mapselF.show()" title="Click to show/center">Example F</a>
+                <ul>
+                    <li>Google API</li>
+                    <li>Japanese</li>
+                    <li>Box-selection</li>
+                </ul>
+            </div>
+            
+            <div class="container" id="mapselG">
+                <a href="#" onclick="mapselG.show()" title="Click to show/center">Example G</a>
                 <ul>
                     <li>Leaflet API</li>
                     <li>Japanese</li>
@@ -84,8 +93,8 @@
                 </ul>
             </div>
             
-            <div class="container" id="mapselG">
-                <a href="#" onclick="mapselG.show()">Example G</a>
+            <div class="container" id="mapselH">
+                <a href="#" onclick="mapselH.show()" title="Click to show/center">Example H</a>
                 <ul>
                     <li>Google API</li>
                     <li>English</li>
@@ -129,24 +138,33 @@
             
             var mapselE = new Mapsel({
                 api: 'google',
+                background: '#99ccff',
                 container: document.getElementById('mapselE'),
+                font: '18px #fff Arial', // weight? style? size? color? family?
                 language: 'yue',
-                radius: 250000,
-                visible: false
+                radius: 250000
             });
             
             var mapselF = new Mapsel({
+                api: 'google',
+                container: document.getElementById('mapselF'),
+                language: 'ja',
+                northeast: [ 66.8, -12.3 ],
+                southwest: [ 62.9, -25.2 ]
+            });
+            
+            var mapselG = new Mapsel({
                 api: 'leaflet',
                 closeable: false,
-                container: document.getElementById('mapselF'),
+                container: document.getElementById('mapselG'),
                 height: 350,
                 language: 'ja',
                 width: 445
             });
             
-            var mapselG = new Mapsel({
+            var mapselH = new Mapsel({
                 api: 'google',
-                container: document.getElementById('mapselG'),
+                container: document.getElementById('mapselH'),
                 height: 350,
                 language: 'en',
                 northeast: [ 66.8, -12.3 ],
