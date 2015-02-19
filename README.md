@@ -39,3 +39,10 @@ The following *UTF-8 encoded* languages are bundled with mapsel:
  * **yue** - Cantonese (traditional characters)
  * **zh** - Chinese (simplified characters)
 
+
+## Konsoll
+Console widget supporting input and output.<br>
+For code examples, check out the [Konsoll demo](http://npolar.github.io/js-widgets/konsoll/demo/) webpage.
+
+#### TODO:
+ * Add API Documentation
