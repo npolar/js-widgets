@@ -16,6 +16,7 @@ var Konsoll = function(options) {
 	this.history		= (typeof options.history == 'number' ? Math.abs(Math.round(options.history)) : 0);
 	this.scrollback		= (typeof options.scrollback == 'number' ? Math.max(-1, Math.round(options.scrollback)) : -1);
 	this.visible		= (typeof options.visible == 'boolean' ? options.visible : false);
+	this.escHide		= (typeof options.escHide == 'boolean' ? options.escHide : true);
 	
 	this.callbacks		= { clear: this.clear.bind(this), help: this.help.bind(this) };
 	this.inputHistory	= [];
@@ -121,6 +122,14 @@ var Konsoll = function(options) {
 					this.toggle();
 					event.preventDefault();
 				}
+			}
+		}.bind(this));
+	}
+	
+	if(this.escHide) {
+		document.addEventListener('keydown', function(event) {
+			if(this.visible && event.keyCode == 27) {
+				this.hide();
 			}
 		}.bind(this));
 	}
