@@ -142,7 +142,7 @@ var Konsoll = function(options) {
 	}
 };
 
-Konsoll.VERSION = "0.1.0";
+Konsoll.VERSION = "0.1.2";
 Konsoll.AUTHORS = [ "Remi A. Solås <remi@npolar.no>" ];
 
 Konsoll.prototype = {
