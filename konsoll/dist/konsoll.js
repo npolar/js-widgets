@@ -113,6 +113,13 @@ var Konsoll = function(options) {
 				}
 			}
 		}.bind(this));
+		
+		// Initially show/hide to override default styling
+		if(this.visible) {
+			this.show();
+		} else {
+			this.hide();
+		}
 	}
 	
 	if(typeof options.toggleKey == 'number') {
@@ -246,7 +253,7 @@ Konsoll.prototype = {
 					var splitted = arr[a].split(' '), url;
 					
 					for(var e in splitted) {
-						if((url = /https?:\/\/.+/i.exec(splitted[e]))) {
+						if((url = /^https?:\/\/.+/i.exec(splitted[e]))) {
 							splitted[e] = splitted[e].replace(url[0],
 								'<a href="' + url[0] + '" title="Click to open URL">' + url[0] + '</a>'
 							);
