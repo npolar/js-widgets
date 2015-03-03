@@ -12,7 +12,7 @@ var Konsoll = function(options) {
 	
 	this.autoHide		= (typeof options.autoHide == 'boolean' ? options.autoHide : true);
 	this.container		= (options.container ? (document.getElementById(options.container) || null) : null);
-	this.echo			= (typeof options.echo == 'boolean' ? options.echo : true);
+	this.echo			= (typeof options.echo == 'boolean' ? options.echo : false);
 	this.history		= (typeof options.history == 'number' ? Math.abs(Math.round(options.history)) : 0);
 	this.scrollback		= (typeof options.scrollback == 'number' ? Math.max(-1, Math.round(options.scrollback)) : -1);
 	this.visible		= (typeof options.visible == 'boolean' ? options.visible : false);
@@ -161,11 +161,15 @@ Konsoll.prototype = {
 			}
 		}
 		
+		if(this.echo) {
+			this.log(str);
+		}
+		
 		var call = str.split(' ');
 		if(this.callbacks[call[0]]) {
 			this.callbacks[call[0]](call.splice(1));
-		} else if(this.echo) {
-			this.log(str);
+		} else if(this.callbacks['*']) {
+			this.callbacks['*'](call);
 		}
 	},
 	callback: function(keyword, callback) {
@@ -184,7 +188,9 @@ Konsoll.prototype = {
 		var callbacks = [];
 		
 		for(var c in this.callbacks) {
-			callbacks.push('<strong>' + c + '</strong>');
+			if(c != '*') {
+				callbacks.push('<strong>' + c + '</strong>');
+			}
 		}
 		
 		this.log('Available commands: ' + callbacks.join(', '));
