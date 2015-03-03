@@ -310,8 +310,8 @@ Konsoll.prototype = {
 	log: function(a) {
 		this.write('', arguments);
 	},
-	debug: function() {
-		this.write('debug', arguments);
+	info: function() {
+		this.write('info', arguments);
 	},
 	warn: function() {
 		this.write('warning', arguments);
