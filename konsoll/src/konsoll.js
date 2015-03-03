@@ -253,7 +253,7 @@ Konsoll.prototype = {
 					var splitted = arr[a].split(' '), url;
 					
 					for(var e in splitted) {
-						if((url = /https?:\/\/.+/i.exec(splitted[e]))) {
+						if((url = /^https?:\/\/.+/i.exec(splitted[e]))) {
 							splitted[e] = splitted[e].replace(url[0],
 								'<a href="' + url[0] + '" title="Click to open URL">' + url[0] + '</a>'
 							);
