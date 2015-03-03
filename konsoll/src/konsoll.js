@@ -113,6 +113,13 @@ var Konsoll = function(options) {
 				}
 			}
 		}.bind(this));
+		
+		// Initially show/hide to override default styling
+		if(this.visible) {
+			this.show();
+		} else {
+			this.hide();
+		}
 	}
 	
 	if(typeof options.toggleKey == 'number') {
