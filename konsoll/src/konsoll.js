@@ -12,7 +12,7 @@ var Konsoll = function(options) {
 	
 	this.autoHide		= (typeof options.autoHide == 'boolean' ? options.autoHide : true);
 	this.container		= (options.container ? (document.getElementById(options.container) || null) : null);
-	this.echo			= (typeof options.echo == 'boolean' ? options.echo : true);
+	this.echo			= (typeof options.echo == 'boolean' ? options.echo : false);
 	this.history		= (typeof options.history == 'number' ? Math.abs(Math.round(options.history)) : 0);
 	this.scrollback		= (typeof options.scrollback == 'number' ? Math.max(-1, Math.round(options.scrollback)) : -1);
 	this.visible		= (typeof options.visible == 'boolean' ? options.visible : false);
@@ -113,6 +113,13 @@ var Konsoll = function(options) {
 				}
 			}
 		}.bind(this));
+		
+		// Initially show/hide to override default styling
+		if(this.visible) {
+			this.show();
+		} else {
+			this.hide();
+		}
 	}
 	
 	if(typeof options.toggleKey == 'number') {
@@ -135,7 +142,7 @@ var Konsoll = function(options) {
 	}
 };
 
-Konsoll.VERSION = "0.1.0";
+Konsoll.VERSION = "0.1.2";
 Konsoll.AUTHORS = [ "Remi A. Solås <remi@npolar.no>" ];
 
 Konsoll.prototype = {
@@ -154,11 +161,15 @@ Konsoll.prototype = {
 			}
 		}
 		
+		if(this.echo) {
+			this.log(str);
+		}
+		
 		var call = str.split(' ');
 		if(this.callbacks[call[0]]) {
 			this.callbacks[call[0]](call.splice(1));
-		} else if(this.echo) {
-			this.log(str);
+		} else if(this.callbacks['*']) {
+			this.callbacks['*'](call);
 		}
 	},
 	callback: function(keyword, callback) {
@@ -177,7 +188,9 @@ Konsoll.prototype = {
 		var callbacks = [];
 		
 		for(var c in this.callbacks) {
-			callbacks.push('<strong>' + c + '</strong>');
+			if(c != '*') {
+				callbacks.push('<strong>' + c + '</strong>');
+			}
 		}
 		
 		this.log('Available commands: ' + callbacks.join(', '));
@@ -246,7 +259,7 @@ Konsoll.prototype = {
 					var splitted = arr[a].split(' '), url;
 					
 					for(var e in splitted) {
-						if((url = /https?:\/\/.+/i.exec(splitted[e]))) {
+						if((url = /^https?:\/\/.+/i.exec(splitted[e]))) {
 							splitted[e] = splitted[e].replace(url[0],
 								'<a href="' + url[0] + '" title="Click to open URL">' + url[0] + '</a>'
 							);
@@ -303,8 +316,8 @@ Konsoll.prototype = {
 	log: function(a) {
 		this.write('', arguments);
 	},
-	debug: function() {
-		this.write('debug', arguments);
+	info: function() {
+		this.write('info', arguments);
 	},
 	warn: function() {
 		this.write('warning', arguments);
