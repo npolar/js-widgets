@@ -12,10 +12,10 @@ var Mapsel = function(options) {
             min = max;
             max = tmp;
         }
-        
+
         return Math.min(max, Math.max(min, value));
     }
-    
+
     // Customisable options
     options = options || {};
     this.api = options.api || 'google';
@@ -36,43 +36,43 @@ var Mapsel = function(options) {
     this.width = options.width || 200;
     this.x = options.x || 0;
     this.y = options.y || 0;
-    
+
     // Internal usage only
     this.elements = { root: document.createElement('div') };
     this.events = {};
     this.instance = Mapsel.instances++;
     var self = this, rootElement = this.elements.root;
-    
+
     // Proxy function used to append children to an element
     function elemAppendFunc(elem, tag, attribs, value) {
         var newElem = document.createElement(tag);
-        
+
         newElem.append = function(tag, attribs, value) {
             return elemAppendFunc(newElem, tag, attribs, value);
         };
-        
+
         for(var a in attribs) {
             newElem.setAttribute(a, attribs[a]);
         }
-        
+
         if(value !== undefined) {
             newElem.innerHTML = value;
         }
-        
+
         elem.appendChild(newElem);
         return newElem;
     }
-    
+
     rootElement.append = function(tag, attribs, value) {
         return elemAppendFunc(self.elements.root, tag, attribs, value);
     };
-    
+
     // Determine the input step-value based on precision
     var stepString = this.precision ? '0.' : '1';
     for(var i = 0; i < this.precision; ++i) {
         stepString += (i == (this.precision - 1) ? 1 : 0);
     }
-    
+
     // Ensure correct font-object format (weight? style? size? color? family?)
     if(typeof this.font == 'string') {
         var fontObject = {},
@@ -82,63 +82,63 @@ var Mapsel = function(options) {
             fontStyles = 'normal,italic,oblique,initial,inherit'.split(','),
             fontColors = 'aqua,black,blue,fuchsia,gray,green,lime,maroon,navy,olive,orange,purple,red,silver,teal,white,yellow'.split(','),
             fontFamilies = 'serif,sans-serif,cursive,fantasy,monospace'.split(',');
-            
+
         // Set font-weight if defined
         if(typeof fontOptions[fontOptionIndex] == 'string' && fontWeights.indexOf(fontOptions[fontOptionIndex]) != -1) {
             fontObject.weight = fontOptions[fontOptionIndex++];
         } else if((Number(fontOptions[fontOptionIndex]) / 100) >= 1 && (Number(fontOptions[fontOptionIndex]) / 100) <= 900) {
             fontObject.weight = Number(fontOptions[fontOptionIndex++]);
         }
-        
+
         // Set font-style if defined
         if(fontStyles.indexOf(fontOptions[fontOptionIndex]) != -1) {
             fontObject.style = fontOptions[fontOptionIndex++];
         }
-        
+
         // Set font-size if defined
         if(/^\d+(px|em|pc|in|mm|%)$/.test(fontOptions[fontOptionIndex])) {
             fontObject.size = fontOptions[fontOptionIndex++];
         }
-        
+
         // Set font-color if defined
         if((fontColors.indexOf(fontOptions[fontOptionIndex]) != -1) || /^(#([a-fA-F0-9]{3}|[a-fA-F0-9]{6})|rgb\(\s?\d{1,3}%?,\s?\d{1,3}%?,\s?\d{1,3}%?\s?\))$/.test(fontOptions[fontOptionIndex])) {
             fontObject.color = fontOptions[fontOptionIndex++];
         }
-        
+
         // Set font-family if defined
         if((fontFamilies.indexOf(fontOptions[fontOptionIndex]) != -1) || /^[-a-zA-Z0-9'", ]+$/.test(fontOptions[fontOptionIndex])) {
             fontObject.family = fontOptions[fontOptionIndex++];
         }
-        
+
         this.font = fontObject;
     }
-    
+
     // Append sub-element container elements
     this.elements.titleBar = rootElement.append('header');
     this.elements.mapContainer = rootElement.append('div', { id: 'mapsel_map_' + this.instance });
     this.elements.fieldset = rootElement.append('fieldset');
-    
+
     // Append a close-button to the titleBar element if closeable
     if(this.closeable) {
         this.elements.closeButton = this.elements.titleBar.append('a', { title: Mapsel.i18n(this.language, 'CLOSE') }, 'X');
         this.elements.closeButton.addEventListener('click', function() { self.hide(); });
     }
-    
+
     // Append applicable fields to the fieldset element
     if(this.northeast !== null && this.southwest !== null) {
         if(this.northeast instanceof Array) {
             this.northeast = { latitude: this.northeast[0], longitude: this.northeast[1] };
         }
-        
+
         if(this.southwest instanceof Array) {
             this.southwest = { latitude: this.southwest[0], longitude: this.southwest[1] };
         }
-        
+
         this.elements.neLabel = this.elements.fieldset.append('label', { for: 'mapsel_ne_' + this.instance }, Mapsel.i18n(this.language, 'NORTHEAST'));
         this.elements.neGroup = this.elements.fieldset.append('fieldset', { id: 'mapsel_ne_' + this.instance, class: 'mapsel-input-pair' });
         this.elements.neLatInput = this.elements.neGroup.append('input', { id: 'mapsel_ne_lat_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LATITUDE'), min: -90, max: 90, step: stepString, value: this.northeast.latitude });
         this.elements.neLngInput = this.elements.neGroup.append('input', { id: 'mapsel_ne_lng_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LONGITUDE'), min: -180, max: 180, step: stepString, value: this.northeast.longitude });
-        
+
         this.elements.swLabel = this.elements.fieldset.append('label', { for: 'mapsel_sw_' + this.instance }, Mapsel.i18n(this.language, 'SOUTHWEST'));
         this.elements.swGroup = this.elements.fieldset.append('fieldset', { id: 'mapsel_sw_' + this.instance, class: 'mapsel-input-pair' });
         this.elements.swLatInput = this.elements.swGroup.append('input', { id: 'mapsel_sw_lat_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LATITUDE'), min: -90, max: 90, step: stepString, value: this.southwest.latitude });
@@ -146,22 +146,22 @@ var Mapsel = function(options) {
     } else if(this.latitude !== null && this.longitude !== null) {
         this.elements.latLabel = this.elements.fieldset.append('label', { for: 'mapsel_lat_' + this.instance }, Mapsel.i18n(this.language, 'LATITUDE'));
         this.elements.latInput = this.elements.fieldset.append('input', { id: 'mapsel_lat_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LATITUDE'), min: -90, max: 90, step: stepString, value: this.latitude.toFixed(this.precision) });
-        
+
         this.elements.lngLabel = this.elements.fieldset.append('label', { for: 'mapsel_lng_' + this.instance }, Mapsel.i18n(this.language, 'LONGITUDE'));
         this.elements.lngInput = this.elements.fieldset.append('input', { id: 'mapsel_lng_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'LONGITUDE'), min: -180, max: 180, step: stepString, value: this.longitude.toFixed(this.precision) });
-        
+
         if(this.radius !== null) {
             this.elements.radLabel = this.elements.fieldset.append('label', { for: 'mapsel_rad_' + this.instance }, Mapsel.i18n(this.language, 'RADIUS'));
             this.elements.radInput = this.elements.fieldset.append('input', { id: 'mapsel_rad_' + this.instance, type: 'number', title: Mapsel.i18n(this.language, 'RADIUS'), step: 1, value: this.radius });
         }
     }
-    
+
     // Set element specific styles
     rootElement.className = 'mapsel';
     rootElement.style.position = (this.container ? 'relative' : 'absolute');
     rootElement.style.background = this.background;
     rootElement.style.opacity = this.opacity;
-    
+
     // Set element specific font-styles (weight? style? size? color? family?)
     var fontStyleMap = { weight: 'fontWeight', style: 'fontStyle', size: 'fontSize', color: 'color', family: 'fontFamily' };
     for(var f in fontStyleMap) {
@@ -169,16 +169,16 @@ var Mapsel = function(options) {
             rootElement.style[fontStyleMap[f]] = this.font[f];
         }
     }
-    
+
     // Append the current container element to the document
     if(this.container) {
         this.container.appendChild(rootElement);
     } else document.body.appendChild(rootElement);
-    
+
     // Set element position and size
     this.move(this.x, this.y);
     this.resize(this.width, this.height);
-    
+
     // Hide element if not visible by default, otherwise initialize the map
     if(!this.visible) {
         this.hide();
@@ -189,6 +189,10 @@ var Mapsel = function(options) {
 
 Mapsel.api = {};
 Mapsel.instances = 0;
+
+if(typeof module == 'object') {
+      module.exports = Mapsel;
+}
 
 /**
  * Mapsel.js - Map Coordinates Selector
@@ -205,15 +209,15 @@ Mapsel.prototype = {
             delete this.events[event];
         }
     },
-    
+
     hide: function() {
         if(this.elements.root) {
             this.elements.root.style.display = 'none';
         }
-        
+
         this.visible = false;
     },
-    
+
     focus: function(element) {
         if(this.elements) {
             switch(element) {
@@ -222,13 +226,13 @@ Mapsel.prototype = {
                     this.elements.latInput.focus();
                 }
                 break;
-                
+
             case 'longitude':
                 if(this.elements.lngInput) {
                     this.elements.lngInput.focus();
                 }
                 break;
-                
+
             case 'radius':
                 if(this.elements.radInput) {
                     this.elements.radInput.focus();
@@ -237,84 +241,84 @@ Mapsel.prototype = {
             }
         }
     },
-    
+
     init: function(api) {
         var self = this;
-        
+
         for(var a in Mapsel.api) {
             if(api.toLowerCase() == a.toLowerCase()) {
                 this.api = new Mapsel.api[a](self);
                 return true;
             }
         }
-        
+
         console.error('Unsupported map API: ' + api);
         return false;
     },
-    
+
     move: function(x, y, relative) {
         if(this.elements.root) {
             this.elements.root.style.left = (relative ? this.x += x : this.x = Math.max(x, 0)) + 'px';
             this.elements.root.style.top = (relative ? this.y += y : this.y = Math.max(y, 0)) + 'px';
         }
     },
-    
+
     resize: function(width, height, relative) {
         this.width = Math.max((relative ? this.width += width : width), 200);
         this.height = Math.max((relative ? this.height += height : height), 200);
-        
+
         // Obtain the pixel width of the longest printable label
         var labelWidth = 0, widthTestElem = document.createElement('span'), testStrings = [];
         widthTestElem.style.fontSize = this.font.size;
         widthTestElem.style.visibility = 'hidden';
-        
+
         if(this.northeast !== null && this.southwest !== null) {
             testStrings.push('NORTHEAST', 'SOUTHWEST');
         } else if(this.latitude !== null && this.longitude !== null) {
             testStrings.push('LATITUDE', 'LONGITUDE');
-            
+
             if(this.radius !== null) {
                 testStrings.push('RADIUS');
             }
         }
-        
+
         document.body.appendChild(widthTestElem);
         for(var i in testStrings) {
             widthTestElem.innerHTML = Mapsel.i18n(this.language, testStrings[i]);
             labelWidth = Math.max(labelWidth, widthTestElem.offsetWidth);
         }
         document.body.removeChild(widthTestElem);
-        
+
         var labelWidthPercent = Math.ceil(((labelWidth + 15) / this.width) * 100),
             labelWidthString = labelWidthPercent + '%',
             inputWidthString = (100 - labelWidthPercent) + '%';
-            
+
         // Calculate the map-container height
         var mapHeight = this.height, baseStyle = window.getComputedStyle(this.elements.root, null);
         mapHeight -= (parseInt(baseStyle.borderTopWidth) + parseInt(baseStyle.borderBottomWidth));
         mapHeight -= (parseInt(baseStyle.paddingTop) + parseInt(baseStyle.paddingBottom));
         mapHeight -= this.elements.titleBar.offsetHeight;
         mapHeight -= this.elements.fieldset.offsetHeight;
-        
+
         var labelElements = [ 'latLabel', 'lngLabel', 'radLabel', 'neLabel', 'swLabel' ];
         for(var le in labelElements) {
             if(this.elements[labelElements[le]]) {
                 this.elements[labelElements[le]].style.width = labelWidthString;
             }
         }
-        
+
         var inputElements = [ 'latInput', 'lngInput', 'radInput', 'neGroup', 'swGroup' ];
         for(var ie in inputElements) {
             if(this.elements[inputElements[ie]]) {
                 this.elements[inputElements[ie]].style.width = inputWidthString;
             }
         }
-        
+
         this.elements.root.style.width = this.width + 'px';
         this.elements.root.style.height = this.height + 'px';
         this.elements.mapContainer.style.height = mapHeight + 'px';
     },
-    
+
     setNortheast: function(ne) {
         if(ne instanceof Array) {
             this.northeast = { latitude: ne[0], longitude: ne[1] };
@@ -325,9 +329,9 @@ Mapsel.prototype = {
         this.elements.neLatInput.value = this.northeast.latitude;
         this.elements.neLngInput.value = this.northeast.longitude;
     },
-    
+
     setSouthwest: function(sw) {
-        if(ne instanceof Array) {
+        if(sw instanceof Array) {
             this.southwest = { latitude: sw[0], longitude: sw[1] };
         } else if(sw.hasOwnProperty('latitude') && sw.hasOwnProperty('longitude')) {
             this.southwest = sw;
@@ -336,18 +340,18 @@ Mapsel.prototype = {
         this.elements.swLatInput.value = this.southwest.latitude;
         this.elements.swLngInput.value = this.southwest.longitude;
     },
-    
+
     show: function() {
         if(this.elements.root) {
             this.elements.root.style.display = 'block';
-            
+
             if(typeof this.api == 'object') {
                 this.api.center(this.latitude, this.longitude);
             } else {
                 this.init(this.api);
             }
         }
-        
+
         this.visible = true;
     }
 };
