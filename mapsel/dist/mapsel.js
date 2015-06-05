@@ -315,6 +315,28 @@ Mapsel.prototype = {
         this.elements.mapContainer.style.height = mapHeight + 'px';
     },
     
+    setNortheast: function(ne) {
+        if(ne instanceof Array) {
+            this.northeast = { latitude: ne[0], longitude: ne[1] };
+        } else if(ne.hasOwnProperty('latitude') && ne.hasOwnProperty('longitude')) {
+            this.northeast = ne;
+        }
+        
+        this.elements.neLatInput = this.northeast.latitude;
+        this.elements.neLngInput = this.northeast.longitude;
+    },
+    
+    setSouthwest: function(sw) {
+        if(ne instanceof Array) {
+            this.southwest = { latitude: sw[0], longitude: sw[1] };
+        } else if(sw.hasOwnProperty('latitude') && sw.hasOwnProperty('longitude')) {
+            this.southwest = sw;
+        }
+        
+        this.elements.swLatInput = this.southwest.latitude;
+        this.elements.swLngInput = this.southwest.longitude;
+    },
+    
     show: function() {
         if(this.elements.root) {
             this.elements.root.style.display = 'block';
