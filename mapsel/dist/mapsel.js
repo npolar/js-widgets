@@ -322,8 +322,8 @@ Mapsel.prototype = {
             this.northeast = ne;
         }
         
-        this.elements.neLatInput = this.northeast.latitude;
-        this.elements.neLngInput = this.northeast.longitude;
+        this.elements.neLatInput.value = this.northeast.latitude;
+        this.elements.neLngInput.value = this.northeast.longitude;
     },
     
     setSouthwest: function(sw) {
@@ -333,8 +333,8 @@ Mapsel.prototype = {
             this.southwest = sw;
         }
         
-        this.elements.swLatInput = this.southwest.latitude;
-        this.elements.swLngInput = this.southwest.longitude;
+        this.elements.swLatInput.value = this.southwest.latitude;
+        this.elements.swLngInput.value = this.southwest.longitude;
     },
     
     show: function() {
