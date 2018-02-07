@@ -1,7 +1,7 @@
 {
   "name": "js-widgets",
-  "version": "0.1.0",
-  "description": "Several usefull js widgets",
+  "version": "0.1.1",
+  "description": "A few useful JS widgets",
   "main": "mapsel/dist/mapsel.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,11 +10,17 @@
     "type": "git",
     "url": "git+https://github.com/npolar/js-widgets.git"
   },
-  "author": "Remi",
+  "author": "remi@npolar.no",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/npolar/js-widgets/issues"
   },
-  "homepage": "https://github.com/npolar/js-widgets#readme"
+  "homepage": "https://github.com/npolar/js-widgets",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-uglify": "^3.0.0",
+    "jshint": "^2.9.5"
+  }
 }
-
